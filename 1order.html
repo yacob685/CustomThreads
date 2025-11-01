@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Pending Print Orders</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .header {
+            background: #2a2a2a;
+            color: white;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .header p {
+            color: #9ca3af;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .filters {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .filter-group {
+            flex: 1;
+        }
+
+        .filter-group label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #555;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            width: 100%;
+            padding: 0.625rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.875rem;
+        }
+
+        .orders-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .order-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+
+        .order-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .order-header {
+            background: #3b82f6;
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .order-id {
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .order-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: rgba(255,255,255,0.2);
+        }
+
+        .order-body {
+            padding: 1.5rem;
+        }
+
+        .order-info {
+            margin-bottom: 1rem;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.875rem;
+        }
+
+        .info-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .info-value {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .design-preview {
+            margin: 1rem 0;
+        }
+
+        .preview-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 0.75rem;
+        }
+
+        .preview-sides {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .preview-side {
+            background: #f9f9f9;
+            border: 2px solid #e5e5e5;
+            border-radius: 6px;
+            padding: 0.5rem;
+            text-align: center;
+        }
+
+        .preview-side-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .preview-side img {
+            width: 100%;
+            height: auto;
+            border-radius: 4px;
+            background: white;
+        }
+
+        .order-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .btn-view {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-view:hover {
+            background: #2563eb;
+        }
+
+        .btn-complete {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-complete:hover {
+            background: #059669;
+        }
+
+        .btn-delete {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #dc2626;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h2 {
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            color: #999;
+            font-size: 0.875rem;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow-y: auto;
+            width: 100%;
+        }
+
+        .modal-header {
+            background: #2a2a2a;
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .detail-section {
+            margin-bottom: 2rem;
+        }
+
+        .detail-section h3 {
+            font-size: 1.125rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .canvas-preview {
+            background: #f5f5f5;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .canvas-preview canvas {
+            max-width: 100%;
+            height: auto;
+            background: white;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🖨️ Admin - Pending Print Orders</h1>
+        <p>Manage custom design orders awaiting production</p>
+    </div>
+
+    <div class="container">
+        <div class="filters">
+            <div class="filter-group">
+                <label>Status</label>
+                <select id="statusFilter" onchange="filterOrders()">
+                    <option value="all">All Orders</option>
+                    <option value="pending" selected>Pending</option>
+                    <option value="completed">Completed</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Product Type</label>
+                <select id="productFilter" onchange="filterOrders()">
+                    <option value="all">All Products</option>
+                    <option value="tshirt">T-Shirt</option>
+                    <option value="hoodie">Hoodie</option>
+                    <option value="tank">Tank Top</option>
+                    <option value="cap">Cap</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Search</label>
+                <input type="text" id="searchFilter" placeholder="Order ID or customer..." onkeyup="filterOrders()">
+            </div>
+        </div>
+
+       
+        <div id="ordersContainer" class="orders-grid"></div>
+    </div>
+
+    <!-- Detail Modal -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Order Details</h2>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+      
+        </div>
+    </div>
+
+  <script>
+    let allOrders = [];
+
+    function loadOrders() {
+        try {
+            // Load from BOTH pending orders AND completed orders
+            const pendingOrders = JSON.parse(localStorage.getItem('ct_pending_orders') || '[]');
+            const completedOrders = JSON.parse(localStorage.getItem('ct_orders_v1') || '[]');
+            
+            // Combine and convert completed orders to admin format
+            allOrders = [...pendingOrders];
+            
+            completedOrders.forEach(order => {
+                // Check if not already in pending orders
+                if (!allOrders.find(o => o.orderId === order.id)) {
+                    allOrders.push({
+                        orderId: order.id,
+                        orderDate: order.date,
+                        status: order.status || 'completed',
+                        customerName: `${order.customer?.firstName || ''} ${order.customer?.lastName || ''}`.trim() || 'Unknown',
+                        customerEmail: order.customer?.email || 'N/A',
+                        product: order.items[0]?.name || 'Custom Product',
+                        productType: order.items[0]?.customDesign?.productType || 'tshirt',
+                        price: order.total || 0,
+                        quantity: order.items.reduce((sum, item) => sum + (item.quantity || 1), 0),
+                        size: order.items[0]?.size || 'M',
+                        activeSides: order.items[0]?.customDesign?.activeSides || ['front'],
+                        thumbnails: order.items[0]?.customDesign?.thumbnails || order.items[0]?.thumbnails || {},
+                        elementsBySide: order.items[0]?.customDesign?.elementsBySide || {},
+                        designDimensions: order.items[0]?.customDesign?.designDimensions || { width: 320, height: 420 },
+                        totalElements: order.items[0]?.customDesign?.totalElements || 0
+                    });
+                }
+            });
+            
+            filterOrders();
+        } catch(e) {
+            console.error('Failed to load orders:', e);
+            allOrders = [];
+            filterOrders();
+        }
+    }
+
+    function filterOrders() {
+        const statusFilter = document.getElementById('statusFilter').value;
+        const productFilter = document.getElementById('productFilter').value;
+        const searchTerm = document.getElementById('searchFilter').value.toLowerCase();
+
+        let filtered = allOrders.filter(order => {
+            const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
+            const matchesProduct = productFilter === 'all' || order.productType === productFilter;
+            const matchesSearch = searchTerm === '' || 
+                order.orderId.toLowerCase().includes(searchTerm) ||
+                order.customerName.toLowerCase().includes(searchTerm) ||
+                order.customerEmail.toLowerCase().includes(searchTerm);
+
+            return matchesStatus && matchesProduct && matchesSearch;
+        });
+
+        renderOrders(filtered);
+    }
+
+   function renderOrders(orders) {
+    const container = document.getElementById('ordersContainer');
+
+    if (orders.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">📦</div>
+                <h2>No Orders Found</h2>
+                <p>There are no orders matching your current filters.</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = orders.map(order => `
+        <div class="order-card">
+            <div class="order-header">
+                <div class="order-id">${order.orderId.substring(0, 20)}...</div>
+                <div class="order-status">${order.status.toUpperCase()}</div>
+            </div>
+            <div class="order-body">
+                <div class="order-info">
+                    <div class="info-row">
+                        <span class="info-label">Customer:</span>
+                        <span class="info-value">${order.customerName}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Product:</span>
+                        <span class="info-value">${order.product}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Size:</span>
+                        <span class="info-value">${order.size}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Price:</span>
+                        <span class="info-value">$${order.price.toFixed(2)}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Date:</span>
+                        <span class="info-value">${new Date(order.orderDate).toLocaleDateString()}</span>
+                    </div>
+                </div>
+
+                <div class="design-preview">
+                    <div class="preview-label">Design Preview:</div>
+                    <div class="preview-sides">
+                        ${order.activeSides.map(side => `
+                            <div class="preview-side">
+                                <div class="preview-side-label">${side}</div>
+                                ${order.thumbnails && order.thumbnails[side] ? `
+                                    <img src="${order.thumbnails[side]}" alt="${side} view" 
+                                         style="max-width: 100%; border: 1px solid #ddd;">
+                                ` : '<div style="padding: 2rem; color: #999;">No preview</div>'}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <div class="order-actions">
+                    <button class="btn btn-view" onclick="viewDetails('${order.orderId}')">View Details</button>
+                    <button class="btn btn-view" onclick="openOrderInStudio('${order.orderId}')" 
+                            style="background: #8b5cf6;" 
+                            onmouseover="this.style.background='#7c3aed'" 
+                            onmouseout="this.style.background='#8b5cf6'">
+                        Open in Studio
+                    </button>
+                    ${order.status === 'pending' ? `
+                        <button class="btn btn-complete" onclick="markComplete('${order.orderId}')">Complete</button>
+                    ` : ''}
+                    <button class="btn btn-delete" onclick="deleteOrder('${order.orderId}')">Delete</button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+    function viewDetails(orderId) {
+        const order = allOrders.find(o => o.orderId === orderId);
+        if (!order) return;
+
+        const modalBody = document.getElementById('modalBody');
+        modalBody.innerHTML = `
+            <div class="detail-section">
+                <h3>Order Information</h3>
+                <div class="detail-grid">
+                    <div><strong>Order ID:</strong> ${order.orderId}</div>
+                    <div><strong>Status:</strong> ${order.status}</div>
+                    <div><strong>Customer:</strong> ${order.customerName}</div>
+                    <div><strong>Email:</strong> ${order.customerEmail}</div>
+                    <div><strong>Product:</strong> ${order.product}</div>
+                    <div><strong>Size:</strong> ${order.size}</div>
+                    <div><strong>Quantity:</strong> ${order.quantity}</div>
+                    <div><strong>Price:</strong> $${order.price.toFixed(2)}</div>
+                </div>
+            </div>
+
+            <div class="detail-section">
+                <h3>Design Specifications</h3>
+                <div class="detail-grid">
+                    <div><strong>Active Sides:</strong> ${order.activeSides.join(', ')}</div>
+                    <div><strong>Total Elements:</strong> ${order.totalElements}</div>
+                    <div><strong>Dimensions:</strong> ${order.designDimensions.width}x${order.designDimensions.height}px</div>
+                </div>
+            </div>
+
+            <div class="detail-section">
+                <h3>High-Resolution Previews</h3>
+                ${order.activeSides.map(side => `
+                    <div class="canvas-preview">
+                        <h4>${side.toUpperCase()}</h4>
+                        ${order.thumbnails[side] ? `
+                            <img src="${order.thumbnails[side]}" style="max-width: 100%; border: 1px solid #ddd; border-radius: 4px;">
+                        ` : '<p>No preview available</p>'}
+                    </div>
+                `).join('')}
+            </div>
+        `;
+
+        document.getElementById('detailModal').classList.add('active');
+    }
+
+    function closeModal() {
+        document.getElementById('detailModal').classList.remove('active');
+    }
+
+    function markComplete(orderId) {
+        if (!confirm('Mark this order as completed?')) return;
+
+        const orderIndex = allOrders.findIndex(o => o.orderId === orderId);
+        if (orderIndex !== -1) {
+            allOrders[orderIndex].status = 'completed';
+            
+            // Update in storage
+            const pending = JSON.parse(localStorage.getItem('ct_pending_orders') || '[]');
+            const pendingIndex = pending.findIndex(o => o.orderId === orderId);
+            if (pendingIndex !== -1) {
+                pending[pendingIndex].status = 'completed';
+                localStorage.setItem('ct_pending_orders', JSON.stringify(pending));
+            }
+            
+            filterOrders();
+        }
+    }
+
+
+      function openOrderInStudio(orderId) {
+  const pending = JSON.parse(localStorage.getItem('ct_pending_orders') || '[]');
+  let order = pending.find(o => o.orderId === orderId);
+
+  // also look in completed orders if not found
+  if (!order) {
+    const completed = JSON.parse(localStorage.getItem('ct_orders_v1') || '[]');
+    const completedOrder = completed.find(o => (o.orderId === orderId) || (o.id === orderId));
+    if (completedOrder) {
+      // Convert completed order format to pending order format
+      order = {
+        orderId: completedOrder.id || completedOrder.orderId,
+        productType: completedOrder.items?.[0]?.customDesign?.productType || 'tshirt',
+        product: completedOrder.items?.[0]?.name || 'Custom Product',
+        activeSides: completedOrder.items?.[0]?.customDesign?.activeSides || ['front'],
+        elementsBySide: completedOrder.items?.[0]?.customDesign?.elementsBySide || {},
+        thumbnails: completedOrder.items?.[0]?.customDesign?.thumbnails || completedOrder.items?.[0]?.thumbnails || {},
+        rawDesign: completedOrder.items?.[0]?.customDesign || null
+      };
+    }
+  }
+  
+  if (!order) {
+    alert('Order not found');
+    return;
+  }
+
+  // Get or create a design ID for this order
+  const designId = 'order_design_' + orderId;
+  
+  // Get saved designs
+  let savedDesigns = JSON.parse(localStorage.getItem('ct_saved_designs') || '[]');
+  
+  // Check if this order's design already exists in saved designs
+  let existingDesign = savedDesigns.find(d => d.id === designId);
+  
+  if (!existingDesign) {
+    // Create a new saved design from the order
+    const newDesign = {
+      id: designId,
+      name: `Order ${orderId.substring(0, 12)}... Design`,
+      timestamp: Date.now(),
+      product: order.productType || 'tshirt',
+      activeSides: order.activeSides || ['front'],
+      elementsBySide: order.elementsBySide || {},
+      thumbnails: order.thumbnails || {},
+      // Include full design data if available
+      ...(order.rawDesign || {})
+    };
+    
+    // Add to saved designs temporarily
+    savedDesigns.push(newDesign);
+    localStorage.setItem('ct_saved_designs', JSON.stringify(savedDesigns));
+  }
+  
+  // Use the same method as saveddesigns.html
+  localStorage.setItem('ct_load_design_id', designId);
+  window.open('DesignStudio.html', '_blank');
+}
+      function deleteOrder(orderId) {
+        if (!confirm('Are you sure you want to delete this order? This action cannot be undone.')) return;
+
+        // Remove from pending orders
+        const pending = JSON.parse(localStorage.getItem('ct_pending_orders') || '[]');
+        const filteredPending = pending.filter(o => o.orderId !== orderId);
+        localStorage.setItem('ct_pending_orders', JSON.stringify(filteredPending));
+        
+        // Remove from completed orders
+        const completed = JSON.parse(localStorage.getItem('ct_orders_v1') || '[]');
+        const filteredCompleted = completed.filter(o => o.id !== orderId);
+        localStorage.setItem('ct_orders_v1', JSON.stringify(filteredCompleted));
+        
+        loadOrders();
+    }
+
+    // Initialize
+    loadOrders();
+
+    // Auto-refresh every 30 seconds
+    setInterval(loadOrders, 3000);
+</script>
+</body>
+</html>

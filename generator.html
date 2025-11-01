@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Prompt & Idea Studio</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Lucide Icons for aesthetic use -->
+    <script type="module">
+        import { createIcons, icons } from 'https://cdn.jsdelivr.net/npm/lucide@latest/dist/esm/lucide.js';
+        window.onload = () => createIcons({ icons });
+    </script>
+    <style>
+        /* Define Inter font family for a modern look */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+   
+        /* Global Reset and Body Styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            /* Set font and the requested deep dark gray background */
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            background-color: #1e1e1e; 
+            color: #ffffff; /* Default text color for dark mode */
+        }
+
+        /* Custom styles for the textarea focus to look cleaner */
+        textarea:focus {
+            outline: none;
+            /* Adjusted shadow color for dark mode focus */
+            box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.4); /* Tailwind's indigo-400 equivalent shadow */
+        }
+        
+        /* New organizational styles for navigation links */
+        .nav-link {
+            /* Use a block layout for better click/tap targets on mobile */
+            display: block; 
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem; /* rounded-xl */
+            font-weight: 500; /* font-medium */
+            transition: background-color 0.2s, color 0.2s;
+            text-decoration: none;
+            color: #d1d5db; /* text-gray-300 */
+        }
+
+        .nav-link:hover {
+            background-color: #374151; /* hover:bg-gray-700 */
+            color: #a5b4fc; /* hover:text-indigo-300 */
+        }
+    </style>
+</head>
+     
+<body class="p-4 md:p-8">
+
+    <!-- NAVIGATION BAR -->
+    <nav class="max-w-4xl mx-auto mb-6 bg-zinc-900 p-3 rounded-xl shadow-lg border border-zinc-700">
+        <div class="flex flex-col md:flex-row justify-center gap-2 md:gap-6">
+            <a href="DesignStudio.html" class="nav-link flex items-center justify-center">
+                <i data-lucide="sparkles" class="w-5 h-5 mr-2"></i>
+                Studio
+            </a>
+            <a href="generator.html" class="nav-link flex items-center justify-center">
+                <i data-lucide="book-open" class="w-5 h-5 mr-2"></i>
+                Prompt Guide
+            </a>
+        </div>
+    </nav>
+    
+    <header class="text-center mb-10">
+
+        
+        <h1 class="text-4xl font-extrabold text-indigo-400 flex items-center justify-center">
+            <i data-lucide="brain-circuit" class="w-8 h-8 mr-3"></i>
+            AI Prompt & Idea Studio
+        </h1>
+        <p class="mt-2 text-gray-400">Brainstorm, enhance, and critique generative AI prompts using Google's models.</p>
+     
+    </header>
+
+    <main class="max-w-4xl mx-auto">
+        
+        <!-- Adjusted error container for dark mode -->
+        <div id="error-container" class="hidden bg-red-900 border border-red-700 text-red-300 px-4 py-3 rounded-xl mb-6 shadow-md" role="alert">
+            <p class="font-bold">Generation Error</p>
+            <p id="error-message" class="text-sm"></p>
+        </div>
+
+        <!-- Main Machine Container - Dark background for contrast -->
+        <div class="bg-zinc-900 p-6 md:p-8 rounded-xl shadow-2xl shadow-black/50 space-y-8">
+            
+            <!-- Prompt Input -->
+            <section>
+                <!-- Adjusted label text color for dark mode -->
+                <label for="prompt-input" class="block text-xl font-semibold text-gray-200 mb-3 flex items-center">
+                    <i data-lucide="wand-2" class="w-5 h-5 mr-2 text-indigo-400"></i>
+                    Your Current Prompt Idea
+                </label>
+                <textarea
+                    id="prompt-input"
+                    rows="5"
+                    class="w-full p-4 border-2 border-gray-700 rounded-xl text-white bg-gray-800 focus:border-indigo-400 transition shadow-inner resize-none placeholder-gray-500"
+                    placeholder="Describe your idea (e.g., A short story about a detective robot, or, A painting of a futuristic city in the style of Van Gogh)"
+                >A hyper-realistic photograph of a lone astronaut tending a field of luminescent blue roses on the surface of Mars, dramatic twilight, 35mm film grain, Hasselblad.</textarea>
+            </section>
+
+            <!-- AI Action Buttons (Text Generation Focus) -->
+            <div class="flex flex-wrap md:flex-row gap-4">
+                <button id="style-prompt-button" class="flex-1 min-w-[30%] py-3 px-4 bg-indigo-500 text-white font-semibold rounded-xl hover:bg-indigo-600 transition shadow-lg shadow-indigo-500/30 flex items-center justify-center">
+                    <i data-lucide="edit" class="w-5 h-5 mr-2"></i>
+                    Enhance Prompt
+                </button>
+                <button id="critique-prompt-button" class="flex-1 min-w-[30%] py-3 px-4 bg-purple-500 text-white font-semibold rounded-xl hover:bg-purple-600 transition shadow-lg shadow-purple-500/30 flex items-center justify-center">
+                    <i data-lucide="brain" class="w-5 h-5 mr-2"></i>
+                    Critique Prompt
+                </button>
+                <button id="generate-theme-button" class="flex-1 min-w-[30%] py-3 px-4 bg-indigo-500 text-white font-semibold rounded-xl hover:bg-indigo-600 transition shadow-lg shadow-indigo-500/30 flex items-center justify-center">
+                    <i data-lucide="lightbulb" class="w-5 h-5 mr-2"></i>
+                    New Idea
+                </button>
+            </div>
+            
+            <!-- Critique Output Section - Adjusted for dark mode -->
+            <section id="critique-section" class="mt-8 hidden">
+                <h2 class="text-2xl font-bold text-gray-100 mb-4 border-b border-gray-700 pb-2 flex items-center">
+                    <i data-lucide="message-square-text" class="w-6 h-6 mr-2 text-purple-400"></i>
+                    AI Critique & Suggestions
+                </h2>
+                <div id="critique-output" class="bg-purple-950/50 p-4 rounded-xl shadow-inner border border-purple-800 text-gray-100">
+                    <!-- Critique text goes here -->
+                </div>
+            </section>
+            
+            <!-- History Section -->
+            <section class="mt-10">
+                <h2 class="text-2xl font-bold text-gray-100 mb-4 border-b border-gray-700 pb-2 flex items-center justify-between">
+                    <span>
+                        <i data-lucide="history" class="w-6 h-6 mr-2 inline-block text-indigo-400"></i>
+                        Prompt Activity Log
+                    </span>
+                    <button id="clear-history-button" class="text-sm text-red-400 hover:text-red-300 transition font-medium">
+                        Clear Log
+                    </button>
+                </h2>
+                <div id="history-list" class="space-y-3">
+                    <p class="text-gray-500 text-sm italic" id="history-empty-message">No activity logged yet. Enhance or Critique a prompt to start logging!</p>
+                    <!-- History items will be inserted here -->
+                </div>
+            </section>
+
+        </div>
+    </main>
+    
+    <!-- Global Loading Overlay -->
+    <div id="global-loading-overlay" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 hidden">
+        <div class="bg-gray-800 p-6 rounded-xl shadow-2xl flex items-center space-x-3">
+            <!-- Custom CSS spinner using Tailwind classes -->
+            <div class="w-8 h-8 border-4 border-indigo-700 border-t-indigo-400 rounded-full animate-spin"></div>
+            <span class="text-lg font-medium text-gray-200">Thinking...</span>
+        </div>
+    </div>
+
+    <script type="module">
+        // --- API Configuration ---
+        const GEMINI_TEXT_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent`;
+        const apiKey = "AIzaSyBIAAAwdRvVuUMyq2RfLYo2HapOe_25j1c"; // Canvas environment provides this at runtime
+
+        // --- DOM Elements ---
+        const promptInput = document.getElementById('prompt-input');
+        const stylePromptButton = document.getElementById('style-prompt-button');
+        const critiquePromptButton = document.getElementById('critique-prompt-button');
+        const generateThemeButton = document.getElementById('generate-theme-button');
+        const globalLoadingOverlay = document.getElementById('global-loading-overlay'); 
+        const errorContainer = document.getElementById('error-container');
+        const errorMessageDisplay = document.getElementById('error-message');
+        const historyList = document.getElementById('history-list');
+        const clearHistoryButton = document.getElementById('clear-history-button');
+        const historyEmptyMessage = document.getElementById('history-empty-message');
+        const critiqueSection = document.getElementById('critique-section');
+        const critiqueOutput = document.getElementById('critique-output');
+
+        // --- Global State ---
+        let isProcessing = false;
+        // Updated history structure to store text-based actions: { id, originalPrompt, action, output, timestamp }
+        let history = []; 
+        const MAX_HISTORY_ITEMS = 10;
+
+        // --- Utility Functions ---
+
+        /**
+         * Utility to display errors on the UI.
+         */
+        function displayError(msg) {
+            errorMessageDisplay.textContent = msg;
+            errorContainer.classList.remove('hidden');
+            console.error("Application Error:", msg);
+        }
+
+        /**
+         * Clears the error display.
+         */
+        function clearError() {
+            errorContainer.classList.add('hidden');
+            errorMessageDisplay.textContent = "";
+        }
+
+        /**
+         * Sets the processing state for the UI.
+         * Only handles text generation buttons now.
+         */
+        function setProcessingState(state, activeBtn = null) {
+            isProcessing = state;
+            
+            // Toggle the new global loading overlay
+            globalLoadingOverlay.classList.toggle('hidden', !state); 
+            
+            const buttons = [stylePromptButton, generateThemeButton, critiquePromptButton];
+            buttons.forEach(btn => {
+                btn.disabled = state;
+                btn.classList.toggle('opacity-50', state);
+                btn.classList.toggle('cursor-not-allowed', state);
+            });
+            
+            promptInput.disabled = state;
+            
+            // Update active button icon (requires Lucide to be loaded)
+            if (activeBtn) {
+                const iconElement = activeBtn.querySelector('i');
+                if (!iconElement) return;
+
+                const originalIcon = activeBtn.getAttribute('data-original-icon');
+                if (!originalIcon) {
+                    // Store the original icon data-lucide attribute on first run
+                    activeBtn.setAttribute('data-original-icon', iconElement.getAttribute('data-lucide'));
+                }
+
+                if (state) {
+                    iconElement.setAttribute('data-lucide', 'loader-2');
+                    iconElement.classList.add('animate-spin');
+                } else {
+                    iconElement.setAttribute('data-lucide', originalIcon || 'wand-2'); // Fallback to a default if not set
+                    iconElement.classList.remove('animate-spin');
+                }
+                // Re-render Lucide icons
+                if (window.createIcons) {
+                    window.createIcons({ icons: window.lucide.icons }); 
+                }
+            }
+        }
+
+        /**
+         * Utility to implement exponential backoff for API retries.
+         */
+        async function withExponentialBackoff(fn, maxRetries = 5) {
+            for (let attempt = 0; attempt < maxRetries; attempt++) {
+                try {
+                    return await fn();
+                } catch (error) {
+                    if (attempt === maxRetries - 1) throw error;
+                    const delay = Math.pow(2, attempt) * 1000;
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                }
+            }
+        }
+        
+        // --- History Management ---
+        
+        /**
+         * Loads history from localStorage.
+         */
+        function loadHistory() {
+            try {
+                const storedHistory = localStorage.getItem('ai_prompt_history');
+                if (storedHistory) {
+                    history = JSON.parse(storedHistory);
+                }
+            } catch (e) {
+                console.error("Could not load history from localStorage:", e);
+                history = [];
+            }
+            renderHistory();
+        }
+
+        /**
+         * Saves the current history array to localStorage.
+         */
+        function saveHistory() {
+            try {
+                // Keep only the MAX_HISTORY_ITEMS most recent items
+                history = history.slice(0, MAX_HISTORY_ITEMS);
+                localStorage.setItem('ai_prompt_history', JSON.stringify(history));
+            } catch (e) {
+                console.error("Could not save history to localStorage:", e);
+            }
+        }
+
+        /**
+         * Adds a new text generation entry to the history.
+         * @param {string} originalPrompt - The prompt before the action.
+         * @param {string} action - The action taken (Enhance, Critique, New Idea).
+         * @param {string} output - The result (new prompt or critique text).
+         */
+        function addHistoryEntry(originalPrompt, action, output) {
+            const newEntry = {
+                id: Date.now(),
+                originalPrompt: originalPrompt,
+                action: action,
+                output: output,
+                timestamp: new Date().toLocaleTimeString(),
+            };
+            history.unshift(newEntry); // Add to the beginning
+            saveHistory();
+            renderHistory();
+        }
+
+        /**
+         * Renders the history list in the DOM.
+         */
+        function renderHistory() {
+            historyList.innerHTML = '';
+            if (history.length === 0) {
+                historyEmptyMessage.classList.remove('hidden');
+                clearHistoryButton.classList.add('hidden');
+                return;
+            }
+
+            historyEmptyMessage.classList.add('hidden');
+            clearHistoryButton.classList.remove('hidden');
+
+            history.forEach(item => {
+                // Adjusted history item colors for dark mode
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'bg-gray-800 p-4 rounded-xl border border-gray-700 hover:bg-gray-700 transition shadow-lg shadow-black/30';
+                
+                // Header (Action & Time)
+                const headerDiv = document.createElement('div');
+                headerDiv.className = 'flex items-center justify-between mb-2 border-b border-gray-700 pb-2';
+                
+                const actionSpan = document.createElement('span');
+                // Use lighter contrasting colors for dark mode text
+                const actionClass = item.action === 'Critique' ? 'text-purple-400' : 'text-indigo-400';
+                actionSpan.className = `font-bold text-sm ${actionClass} flex items-center`;
+                actionSpan.innerHTML = `<i data-lucide="${item.action === 'Critique' ? 'message-square-text' : 'sparkles'}" class="w-4 h-4 mr-1"></i> ${item.action}`;
+                
+                const timeSpan = document.createElement('span');
+                timeSpan.className = 'text-xs text-gray-400';
+                timeSpan.innerHTML = `<i data-lucide="clock" class="w-3 h-3 inline-block mr-1"></i>${item.timestamp}`;
+                
+                headerDiv.appendChild(actionSpan);
+                headerDiv.appendChild(timeSpan);
+                itemDiv.appendChild(headerDiv);
+
+                // Original Prompt (if applicable)
+                if (item.action !== 'New Idea') {
+                    const originalP = document.createElement('p');
+                    originalP.className = 'text-xs text-gray-400 italic mb-2 line-clamp-2';
+                    originalP.innerHTML = `<span class="font-semibold text-gray-500">Original:</span> ${item.originalPrompt}`;
+                    itemDiv.appendChild(originalP);
+                }
+
+                // Output (New Prompt or Critique)
+                const outputP = document.createElement('p');
+                outputP.className = 'text-sm text-gray-100 whitespace-pre-wrap';
+                // Use lighter contrasting colors for dark mode text
+                outputP.innerHTML = `<span class="font-semibold ${item.action === 'Critique' ? 'text-purple-300' : 'text-indigo-300'}">Result:</span> ${item.output}`;
+                itemDiv.appendChild(outputP);
+                
+                // Click handler to re-load prompt
+                itemDiv.addEventListener('click', () => {
+                    const promptToLoad = item.action === 'Critique' ? item.originalPrompt : item.output;
+                    promptInput.value = promptToLoad;
+                    // If it was a critique, display the critique result again
+                    if (item.action === 'Critique') {
+                        critiqueOutput.innerHTML = item.output;
+                        critiqueSection.classList.remove('hidden');
+                    } else {
+                        critiqueSection.classList.add('hidden');
+                    }
+                    clearError();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+
+                historyList.appendChild(itemDiv);
+            });
+            // Re-render Lucide icons inside history
+            if (window.createIcons) {
+                window.createIcons({ icons: window.lucide.icons }); 
+            }
+        }
+        
+        function clearHistory() {
+            // Note: Using a custom modal/dialog is preferred over confirm() in production environment.
+            if (window.confirm("Are you sure you want to clear your prompt activity log?")) {
+                history = [];
+                saveHistory();
+                renderHistory();
+            }
+        }
+        
+        // --- Core API Call Functions ---
+
+        /**
+         * Calls the Gemini API for prompt critique.
+         */
+        async function critiquePrompt(prompt, buttonElement) {
+            if (isProcessing) return;
+
+            setProcessingState(true, buttonElement);
+            clearError();
+            critiqueSection.classList.add('hidden'); 
+            critiqueOutput.innerHTML = `<p class="text-purple-400 italic">Analyzing prompt... Please wait.</p>`;
+
+            const systemPrompt = "You are a professional AI art director and prompt critique expert. Your goal is to analyze the user's prompt for clarity, detail, composition, and style. Provide feedback in two short paragraphs: 1) A brief critique (1-2 sentences) on the prompt's strengths and weaknesses. 2) A concrete suggestion (1-2 sentences) on what specific detail or keyword could be added to significantly improve the prompt (e.g., specific lighting, camera lens, or art style). Respond in simple, easy-to-read text, suitable for a web application.";
+            const userQuery = `Critique the following prompt: "${prompt}"`;
+            const url = `${GEMINI_TEXT_API_URL}?key=${apiKey}`;
+
+            try {
+                const result = await withExponentialBackoff(async () => {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ parts: [{ text: userQuery }] }],
+                            systemInstruction: { parts: [{ text: systemPrompt }] },
+                        })
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(`Critique API Request failed: ${response.status} - ${response.statusText}. Details: ${errorText.substring(0, 100)}...`);
+                    }
+                    return response.json();
+                });
+
+                const generatedText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                
+                if (generatedText) {
+                    const critiqueText = generatedText.trim().replace(/\n/g, '<br>');
+                    critiqueOutput.innerHTML = critiqueText;
+                    critiqueSection.classList.remove('hidden');
+                    // Add to history
+                    addHistoryEntry(prompt, 'Critique', critiqueText);
+                } else {
+                    displayError("AI Critique failed to return content. Try a shorter prompt.");
+                    critiqueOutput.innerHTML = '';
+                }
+            } catch (err) {
+                displayError(err.message || "An unexpected error occurred during prompt critique.");
+                critiqueOutput.innerHTML = '';
+            } finally {
+                setProcessingState(false, buttonElement);
+            }
+        }
+
+        /**
+         * Calls the Gemini API for text generation (used by Enhance/Theme buttons).
+         */
+        async function callGeminiTextApi(systemPrompt, userQuery, actionName, buttonElement) {
+            if (isProcessing) return;
+
+            setProcessingState(true, buttonElement);
+            clearError();
+            critiqueSection.classList.add('hidden'); // Hide critique when performing other text actions
+            
+            const originalPrompt = promptInput.value.trim();
+
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+            };
+            const url = `${GEMINI_TEXT_API_URL}?key=${apiKey}`;
+
+            try {
+                const result = await withExponentialBackoff(async () => {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(`Text API Request failed: ${response.status} - ${response.statusText}. Details: ${errorText.substring(0, 100)}...`);
+                    }
+                    return response.json();
+                });
+
+                const generatedText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                
+                if (generatedText) {
+                    const newPrompt = generatedText.trim();
+                    promptInput.value = newPrompt;
+                    // Add to history
+                    addHistoryEntry(originalPrompt, actionName, newPrompt);
+                } else {
+                    displayError("AI Assistant failed to return content. Try a different prompt.");
+                }
+            } catch (err) {
+                displayError(err.message || "An unexpected error occurred during text processing.");
+            } finally {
+                setProcessingState(false, buttonElement);
+            }
+        }
+
+
+        // --- Event Listeners and Initialization ---
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            loadHistory();
+            
+            // Text Generation Buttons
+            stylePromptButton.addEventListener('click', () => {
+                const currentPrompt = promptInput.value.trim();
+                if (!currentPrompt) {
+                    displayError("Please enter a prompt to enhance.");
+                    return;
+                }
+                const systemPrompt = "You are a specialized prompt engineer for a high-end generative AI model. Take the user's input and rewrite it into a single, highly detailed, evocative, and compelling prompt. Add descriptive style keywords, emotional tone, and specific details. Do not include any introductory or concluding phrases, only the enhanced prompt.";
+                const userQuery = `Enhance this prompt: "${currentPrompt}"`;
+                callGeminiTextApi(systemPrompt, userQuery, 'Enhance', stylePromptButton);
+            });
+            
+            // Critique Prompt Button
+            critiquePromptButton.addEventListener('click', () => {
+                const currentPrompt = promptInput.value.trim();
+                if (!currentPrompt) {
+                    displayError("Please enter a prompt to critique.");
+                    return;
+                }
+                critiquePrompt(currentPrompt, critiquePromptButton);
+            });
+
+
+            generateThemeButton.addEventListener('click', () => {
+                const systemPrompt = "You are a creative muse for generative AI. Generate one completely new and highly creative theme idea and provide a concise, exciting starting prompt for it. The output must be ONLY the prompt, ready to be used by a generative model. The theme should combine two unexpected concepts (e.g., 'Victorian-era robots' or 'Gothic synth-pop').";
+                const userQuery = "Generate a new, unique art theme and a corresponding prompt.";
+                callGeminiTextApi(systemPrompt, userQuery, 'New Idea', generateThemeButton);
+            });
+            
+            // History Clear Button
+            clearHistoryButton.addEventListener('click', clearHistory);
+            
+            // Initial setup to ensure buttons are enabled on external host
+            setProcessingState(false, null);
+
+        });
+    </script>
+</body>
+</html>

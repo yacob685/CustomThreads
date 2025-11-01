@@ -1,0 +1,2590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design Studio Pro - CustomThreads</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1e1e1e;
+            color: #ffffff;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* Layout */
+        .studio-container {
+            display: grid;
+            grid-template-columns: 280px 1fr 320px;
+            grid-template-rows: 60px 1fr 50px;
+            height: 100vh;
+            gap: 0;
+        }
+
+        /* Header */
+        .header {
+            grid-column: 1 / -1;
+            background: #2a2a2a;
+            border-bottom: 1px solid #3a3a3a;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.5rem;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #3b82f6;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1.25rem;
+            border-radius: 6px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+
+        .btn-secondary {
+            background: #374151;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        /* Toolbar Left */
+        .toolbar-left {
+            background: #252525;
+            border-right: 1px solid #3a3a3a;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+
+        .tool-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .tool-section h3 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #9ca3af;
+            margin-bottom: 0.75rem;
+            letter-spacing: 0.5px;
+        }
+
+        .tool-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+
+        .tool-btn:hover {
+            background: #333333;
+            border-color: #4a4a4a;
+        }
+
+        .tool-btn.active {
+            background: #3b82f6;
+            border-color: #3b82f6;
+        }
+
+        .tool-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        /* Canvas Area */
+        .canvas-area {
+            background: #1a1a1a;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .canvas-toolbar {
+            background: #252525;
+            border-bottom: 1px solid #3a3a3a;
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .canvas-toolbar-group {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .canvas-toolbar-divider {
+            width: 1px;
+            height: 24px;
+            background: #3a3a3a;
+        }
+
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            font-size: 1.125rem;
+        }
+
+        .icon-btn:hover {
+            background: #333333;
+        }
+
+        .icon-btn.active {
+            background: #3b82f6;
+            border-color: #3b82f6;
+        }
+
+      .canvas-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: auto;
+    padding: 2rem;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.canvas {
+    width: 500px;
+    height: 600px;
+    background: white;
+    position: relative;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.canvas-label {
+    position: absolute;
+    top: -30px;
+    left: 0;
+    font-size: 0.875rem;
+    color: #9ca3af;
+    font-weight: 600;
+}
+        .canvas {
+            width: 600px;
+            height: 700px;
+            background: white;
+            position: relative;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .product-mockup {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #f3f4f6 0%, #e5e7eb 100%);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .design-area {
+            width: 400px;
+            height: 500px;
+            position: relative;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px dashed #cbd5e1;
+            border-radius: 8px;
+        }
+
+        /* Elements */
+        .design-element {
+            position: absolute;
+            cursor: move;
+            user-select: none;
+        }
+
+        .design-element.selected {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+        }
+
+        .design-element img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            pointer-events: none;
+        }
+
+        .design-element .text-content {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+
+        .transform-handles {
+            position: absolute;
+            inset: -8px;
+            pointer-events: none;
+        }
+
+        .handle {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: white;
+            border: 2px solid #3b82f6;
+            border-radius: 50%;
+            pointer-events: auto;
+            cursor: pointer;
+        }
+
+        .handle.tl { left: -6px; top: -6px; cursor: nwse-resize; }
+        .handle.tr { right: -6px; top: -6px; cursor: nesw-resize; }
+        .handle.bl { left: -6px; bottom: -6px; cursor: nesw-resize; }
+        .handle.br { right: -6px; bottom: -6px; cursor: nwse-resize; }
+        .handle.rotate {
+            left: 50%;
+            top: -30px;
+            transform: translateX(-50%);
+            cursor: grab;
+            background: #3b82f6;
+        }
+
+        /* Right Panel */
+        .panel-right {
+            background: #252525;
+            border-left: 1px solid #3a3a3a;
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .panel-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .panel-section h3 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: #f3f4f6;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.75rem;
+            color: #9ca3af;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.625rem;
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+            border-radius: 4px;
+            color: white;
+            font-size: 0.875rem;
+            font-family: inherit;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        .color-picker-wrapper {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .color-preview {
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+            border: 2px solid #3a3a3a;
+            cursor: pointer;
+        }
+
+        .color-input {
+            flex: 1;
+        }
+
+        /* Layers Panel */
+        .layers-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .layer-item {
+            padding: 0.75rem;
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s;
+        }
+
+        .layer-item:hover {
+            background: #333333;
+        }
+
+        .layer-item.active {
+            border-color: #3b82f6;
+            background: #2a3a4a;
+        }
+
+        .layer-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex: 1;
+        }
+
+        .layer-icon {
+            width: 32px;
+            height: 32px;
+            background: #1a1a1a;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .layer-name {
+            font-size: 0.875rem;
+        }
+
+        .layer-actions {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .layer-action-btn {
+            width: 24px;
+            height: 24px;
+            background: transparent;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .layer-action-btn:hover {
+            background: #3a3a3a;
+            color: white;
+        }
+
+        /* Footer */
+        .footer {
+            grid-column: 1 / -1;
+            background: #2a2a2a;
+            border-top: 1px solid #3a3a3a;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.5rem;
+            font-size: 0.875rem;
+            color: #9ca3af;
+        }
+
+        .zoom-controls {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #10b981;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .notification.error {
+            background: #ef4444;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #3a3a3a;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4a4a4a;
+        }
+
+        /* Hidden input */
+        #file-input {
+            display: none;
+        }
+
+        /* Product Selector */
+        .product-selector {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+        }
+
+        .product-option {
+            padding: 0.75rem;
+            background: #2a2a2a;
+            border: 2px solid #3a3a3a;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+
+        .product-option:hover {
+            border-color: #4a4a4a;
+        }
+
+        .product-option.active {
+            border-color: #3b82f6;
+            background: #2a3a4a;
+        }
+
+        .product-icon {
+            font-size: 2rem;
+            margin-bottom: 0.25rem;
+        }
+
+      .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-link {
+            padding: 0.5rem 1rem;
+            color: #9ca3af;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover {
+            background: #374151;
+            color: white;
+        }
+
+        .nav-link.active {
+            background: #3b82f6;
+            color: white;
+        }
+
+        /* --- AI Chatbox Styles --- */
+.ai-chat-toggle {
+    position: fixed;
+    bottom: 65px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    line-height: 60px;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 2000;
+    transition: background 0.2s, transform 0.2s;
+}
+.ai-chat-toggle:hover {
+    background: #2c73eb;
+    transform: scale(1.05);
+}
+.ai-chat-toggle.open {
+    background: #f44336;
+    transform: rotate(45deg);
+}
+
+#ai-chat-box {
+    position: fixed;
+    bottom: 140px;
+    right: 20px;
+    width: min(100%, 380px);
+    height: 500px;
+    background: #2a2a2a;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+    z-index: 1999;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid #3a3a3a;
+}
+#ai-chat-box.open {
+    display: flex;
+}
+
+.chat-header {
+    padding: 1rem;
+    background: #3b82f6;
+    color: white;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+#chat-messages {
+    flex-grow: 1;
+    padding: 1rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    background: #1e1e1e;
+}
+
+.message {
+    max-width: 85%;
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+
+.message.user {
+    align-self: flex-end;
+    background: #3b82f6;
+    color: white;
+    border-bottom-right-radius: 2px;
+}
+
+.message.ai {
+    align-self: flex-start;
+    background: #3a3a3a;
+    color: #eee;
+    border-bottom-left-radius: 2px;
+}
+
+.ai-sources {
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    color: #888;
+    border-top: 1px solid #444;
+    padding-top: 5px;
+}
+.ai-sources a {
+    color: #3b82f6;
+    text-decoration: none;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.ai-sources a:hover {
+    text-decoration: underline;
+}
+
+
+.chat-input-area {
+    display: flex;
+    padding: 1rem;
+    border-top: 1px solid #3a3a3a;
+    background: #2a2a2a;
+}
+
+#chat-input {
+    flex-grow: 1;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 6px;
+    background: #1e1e1e;
+    color: white;
+    margin-right: 0.5rem;
+}
+
+#chat-send-btn {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+#chat-send-btn:hover {
+    background: #2c73eb;
+}
+
+.loading-dots {
+    align-self: flex-start;
+    margin-top: 0.5rem;
+    font-size: 1.5rem;
+    color: #3b82f6;
+    opacity: 0.7;
+    display: none;
+}
+    </style>
+</head>
+<body>
+    <div class="studio-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">CustomThreads Studio Pro</div>
+                <nav class="nav-links">
+            <a href="new.html" class="nav-link">Home</a>
+            <a href="Design Studio.html" class="nav-link active">Design Studio</a>
+            <a href="saveddesigns.html" class="nav-link">Saved Designs</a>
+
+            <a href="generator.html" class="nav-link">AI Generation</a>
+         </nav>
+    
+            <div class="header-actions">
+                <button class="btn btn-secondary" onclick="app.newProject()">New</button>
+                <button class="btn btn-secondary" onclick="app.saveProject()">Save</button>
+                <button class="btn btn-secondary" onclick="app.exportDesign()">Export</button>
+                <button class="btn btn-primary" onclick="app.addToCart()">Add to Cart</button>
+            </div>
+        </div>
+
+        <!-- Left Toolbar -->
+        <div class="toolbar-left">
+            <div class="tool-section">
+                <h3>Tools</h3>
+                <button class="tool-btn" onclick="app.setTool('select')">
+                    <span class="tool-icon">↖</span>
+                    <span>Select (V)</span>
+                </button>
+                <button class="tool-btn" onclick="app.addText()">
+                    <span class="tool-icon">T</span>
+                    <span>Add Text (T)</span>
+                </button>
+                <button class="tool-btn" onclick="app.uploadImage()">
+                    <span class="tool-icon">🖼</span>
+                    <span>Upload Image</span>
+                </button>
+                <button class="tool-btn" onclick="app.addShape('rectangle')">
+                    <span class="tool-icon">▭</span>
+                    <span>Rectangle</span>
+                </button>
+                <button class="tool-btn" onclick="app.addShape('circle')">
+                    <span class="tool-icon">●</span>
+                    <span>Circle</span>
+                </button>
+                <button class="tool-btn" onclick="app.addEmoji()">
+    <span class="tool-icon">😊</span>
+    <span>Add Emoji</span>
+</button>
+            </div>
+
+            
+            <div class="tool-section">
+                <h3>Product</h3>
+                <div class="product-selector">
+                    <div class="product-option active" onclick="app.setProduct('tshirt')">
+                        <div class="product-icon">👕</div>
+                        <div>T-Shirt ($29.99)</div>
+                    </div>
+                    <div class="product-option" onclick="app.setProduct('hoodie')">
+                        <div class="product-icon">🧥</div>
+                        <div>Hoodie ($29.99)</div>
+                    </div>
+                    <div class="product-option" onclick="app.setProduct('tank')">
+                        <div class="product-icon">👚</div>
+                        <div>Tank Top ($29.99)</div>
+                    </div>
+                    <div class="product-option" onclick="app.setProduct('cap')">
+                        <div class="product-icon">🧢</div>
+                        <div>Cap ($29.99)</div>
+                    </div>
+                </div>
+            </div>
+
+            
+       <div class="tool-section">
+    <h3>Sides</h3>
+           <button class="tool-btn" onclick="app.toggleAllSides()" id="btn-toggle-all-sides" title="Toggle all sides">
+  <span class="tool-icon">⬢</span>
+  <span>All Sides</span>
+</button>
+    <button class="tool-btn active" onclick="app.toggleSide('front')" data-side="front">
+        <span class="tool-icon">⬜</span>
+        <span>Front</span>
+    </button>
+    <button class="tool-btn active" onclick="app.toggleSide('back')" data-side="back">
+        <span class="tool-icon">⬜</span>
+        <span>Back</span>
+    </button>
+    <button class="tool-btn" onclick="app.toggleSide('left')" data-side="left">
+        <span class="tool-icon">⬜</span>
+        <span>Left</span>
+    </button>
+    <button class="tool-btn" onclick="app.toggleSide('right')" data-side="right">
+        <span class="tool-icon">⬜</span>
+        <span>Right</span>
+    </button>
+           <!-- Toggle All Sides -->
+
+
+</div>
+        </div>
+
+        <!-- Canvas Area -->
+        <div class="canvas-area">
+            <div class="canvas-toolbar">
+                <div class="canvas-toolbar-group">
+                    <button class="icon-btn" onclick="app.undo()" title="Undo (Ctrl+Z)">↶</button>
+                    <button class="icon-btn" onclick="app.redo()" title="Redo (Ctrl+Y)">↷</button>
+                </div>
+                
+                <div class="canvas-toolbar-divider"></div>
+                
+                <div class="canvas-toolbar-group">
+                    <button class="icon-btn" onclick="app.alignLeft()" title="Align Left">⫷</button>
+                    <button class="icon-btn" onclick="app.alignCenter()" title="Align Center">⫼</button>
+                    <button class="icon-btn" onclick="app.alignRight()" title="Align Right">⫸</button>
+                </div>
+                
+                <div class="canvas-toolbar-divider"></div>
+                
+                <div class="canvas-toolbar-group">
+                    <button class="icon-btn" onclick="app.bringForward()" title="Bring Forward">⬆</button>
+                    <button class="icon-btn" onclick="app.sendBackward()" title="Send Backward">⬇</button>
+                </div>
+                
+                <div class="canvas-toolbar-divider"></div>
+                
+                <div class="canvas-toolbar-group">
+                    <button class="icon-btn" onclick="app.deleteSelected()" title="Delete (Del)">🗑</button>
+                    <button class="icon-btn" onclick="app.duplicateSelected()" title="Duplicate (Ctrl+D)">⎘</button>
+                </div>
+            </div>
+
+          <div class="canvas-wrapper" id="canvasWrapper">
+    <!-- Canvases will be dynamically generated -->
+</div>
+        </div>
+
+        <!-- Right Panel -->
+        <div class="panel-right">
+            <div class="panel-section">
+                <h3>Layers</h3>
+                <div class="layers-list" id="layersList">
+                    <div style="text-align: center; padding: 2rem; color: #6b7280; font-size: 0.875rem;">
+                        No layers yet. Add text or images to get started.
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-section" id="propertiesPanel" style="display: none;">
+                <h3>Properties</h3>
+                <div id="propertiesContent"></div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div>
+                <span id="selectionInfo">No selection</span>
+            </div>
+            <div class="zoom-controls">
+                <button class="icon-btn" onclick="app.zoomOut()">-</button>
+                <span id="zoomLevel">100%</span>
+                <button class="icon-btn" onclick="app.zoomIn()">+</button>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="file-input" accept="image/*" onchange="app.handleFileUpload(event)">
+
+  <script>
+
+  // ===== SHARED AUTHENTICATION MODULE =====
+const Auth = {
+    storageKey: 'ct_auth_users',
+    currentUserKey: 'ct_current_user',
+    
+    getUsers() {
+        try {
+            return JSON.parse(localStorage.getItem(this.storageKey) || '[]');
+        } catch(e) {
+            return [];
+        }
+    },
+    
+    saveUsers(users) {
+        localStorage.setItem(this.storageKey, JSON.stringify(users));
+    },
+    
+    getCurrentUser() {
+        try {
+            return JSON.parse(localStorage.getItem(this.currentUserKey) || 'null');
+        } catch(e) {
+            return null;
+        }
+    },
+    
+    setCurrentUser(user) {
+        if (user) {
+            localStorage.setItem(this.currentUserKey, JSON.stringify(user));
+        } else {
+            localStorage.removeItem(this.currentUserKey);
+        }
+    },
+    
+    signUp(email, password, firstName, lastName) {
+        const users = this.getUsers();
+        
+        if (users.find(u => u.email.toLowerCase() === email.toLowerCase())) {
+            return { success: false, message: 'Email already registered' };
+        }
+        
+        const newUser = {
+            id: 'user_' + Date.now(),
+            email: email.toLowerCase(),
+            password: password,
+            firstName,
+            lastName,
+            name: firstName + ' ' + lastName,
+            createdAt: new Date().toISOString(),
+            cart: [],
+            orders: [],
+            savedDesigns: []
+        };
+        
+        users.push(newUser);
+        this.saveUsers(users);
+        this.setCurrentUser(newUser);
+        
+        return { success: true, user: newUser };
+    },
+    
+    signIn(email, password) {
+        const users = this.getUsers();
+        const user = users.find(u => 
+            u.email.toLowerCase() === email.toLowerCase() && 
+            u.password === password
+        );
+        
+        if (user) {
+            this.setCurrentUser(user);
+            return { success: true, user };
+        }
+        
+        return { success: false, message: 'Invalid email or password' };
+    },
+    
+    signOut() {
+        this.setCurrentUser(null);
+    },
+    
+    updateUser(updates) {
+        const currentUser = this.getCurrentUser();
+        if (!currentUser) return { success: false, message: 'Not logged in' };
+        
+        const users = this.getUsers();
+        const userIndex = users.findIndex(u => u.id === currentUser.id);
+        
+        if (userIndex !== -1) {
+            users[userIndex] = { ...users[userIndex], ...updates };
+            this.saveUsers(users);
+            this.setCurrentUser(users[userIndex]);
+            return { success: true, user: users[userIndex] };
+        }
+        
+        return { success: false, message: 'User not found' };
+    }
+};
+
+// ===== CART MANAGER MODULE =====
+const CartManager = {
+    storageKey: 'ct_cart_v1',
+    
+    getCart() {
+        try {
+            const cart = JSON.parse(localStorage.getItem(this.storageKey) || '[]');
+            return cart;
+        } catch(e) {
+            console.error('Cart load error:', e);
+            return [];
+        }
+    },
+    
+    saveCart(cart) {
+        try {
+            localStorage.setItem(this.storageKey, JSON.stringify(cart));
+            const user = Auth.getCurrentUser();
+            if (user) {
+                Auth.updateUser({ cart: cart });
+            }
+            return true;
+        } catch(e) {
+            console.error('Cart save error:', e);
+            return false;
+        }
+    },
+    
+    addItem(item) {
+        const cart = this.getCart();
+        
+        if (!item.id) {
+            item.id = 'cart_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+        
+        item.addedAt = item.addedAt || Date.now();
+        item.quantity = item.quantity || 1;
+        
+        cart.push(item);
+        this.saveCart(cart);
+        
+        window.dispatchEvent(new CustomEvent('cartUpdated', { detail: { cart } }));
+        
+        return item;
+    },
+    
+    removeItem(itemId) {
+        let cart = this.getCart();
+        cart = cart.filter(item => item.id !== itemId);
+        this.saveCart(cart);
+        window.dispatchEvent(new CustomEvent('cartUpdated', { detail: { cart } }));
+        return true;
+    },
+    
+    updateQuantity(itemId, quantity) {
+        const cart = this.getCart();
+        const item = cart.find(i => i.id === itemId);
+        if (item) {
+            item.quantity = Math.max(1, parseInt(quantity));
+            this.saveCart(cart);
+            window.dispatchEvent(new CustomEvent('cartUpdated', { detail: { cart } }));
+        }
+    },
+    
+    getTotal() {
+        const cart = this.getCart();
+        return cart.reduce((sum, item) => {
+            return sum + (parseFloat(item.price || 0) * parseInt(item.quantity || 1));
+        }, 0);
+    },
+    
+    getCount() {
+        const cart = this.getCart();
+        return cart.reduce((sum, item) => sum + parseInt(item.quantity || 1), 0);
+    },
+    
+    clearCart() {
+        this.saveCart([]);
+        window.dispatchEvent(new CustomEvent('cartUpdated', { detail: { cart: [] } }));
+    }
+};
+
+// ===== DESIGN STUDIO APP =====
+let currentUser = Auth.getCurrentUser();
+
+window.addEventListener('DOMContentLoaded', () => {
+    currentUser = Auth.getCurrentUser();
+    app.init();
+});
+
+   // Place this BEFORE or AFTER the app object definition
+async function fetchWithBackoff(apiUrl, payload, retries = 5, delay = 1000) {
+    const apiKey = "AIzaSyBIAAAwdRvVuUMyq2RfLYo2HapOe_25j1c";
+    const url = `${apiUrl}?key=${apiKey}`;
+
+    for (let i = 0; i < retries; i++) {
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                return await response.json();
+            } else if (response.status === 429 && i < retries - 1) {
+                await new Promise(resolve => setTimeout(resolve, delay));
+                delay *= 2;
+            } else {
+                throw new Error(`API request failed with status ${response.status}: ${response.statusText}`);
+            }
+        } catch (error) {
+            if (i === retries - 1) throw error;
+            await new Promise(resolve => setTimeout(resolve, delay));
+            delay *= 2;
+        }
+    }
+}
+   
+const app = {
+    elementsBySide: {
+        front: [],
+        back: [],
+        left: [],
+        right: []
+    },
+    history: [],
+    historyIndex: -1,
+    selectedId: null,
+    currentProduct: 'tshirt',
+    activeSides: ['front', 'back'],
+    currentEditingSide: 'front',
+    zoom: 1,
+    dragState: null,
+    resizeState: null,
+    rotateState: null,
+    
+    // Add AI properties here
+    chatHistory: [],
+    chatIsLoading: false,
+
+   init() {
+    // Load last saved state automatically
+    this.loadAutoSavedState();
+    
+    this.renderCanvases();
+    this.setupEventListeners();
+    this.setupChatListeners();
+    
+    // Check if loading a specific design
+    const loadDesignId = localStorage.getItem('ct_load_design_id');
+    if (loadDesignId) {
+        localStorage.removeItem('ct_load_design_id');
+        this.loadSpecificDesign(loadDesignId);
+    }
+},
+            setupChatListeners: function() {
+                const toggleBtn = document.getElementById('ai-chat-toggle');
+                const chatBox = document.getElementById('ai-chat-box');
+                const sendBtn = document.getElementById('chat-send-btn');
+                const inputField = document.getElementById('chat-input');
+
+                toggleBtn.addEventListener('click', () => {
+                    chatBox.classList.toggle('open');
+                    toggleBtn.classList.toggle('open');
+                    if (chatBox.classList.contains('open')) {
+                        inputField.focus();
+                        this.scrollToBottom();
+                    }
+                });
+
+                sendBtn.addEventListener('click', () => this.handleChatInput());
+                inputField.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' && !this.chatIsLoading) {
+                        this.handleChatInput();
+                    }
+                });
+            },
+
+            handleChatInput: function() {
+                const inputField = document.getElementById('chat-input');
+                const userQuery = inputField.value.trim();
+                if (!userQuery) return;
+
+                this.addMessage(userQuery, 'user');
+                inputField.value = '';
+                this.scrollToBottom();
+
+                this.callGemini(userQuery);
+            },
+
+            addMessage: function(text, sender, sources = []) {
+                const messagesContainer = document.getElementById('chat-messages');
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${sender}`;
+
+                // Simple markdown conversion for display
+                let htmlContent = text
+                    .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>') // Bold
+                    .replace(/\*(.*?)\*/g, '<i>$1</i>')   // Italic
+                    .replace(/\n/g, '<br>');             // New lines
+
+                messageDiv.innerHTML = htmlContent;
+
+                if (sources.length > 0) {
+                    const sourcesDiv = document.createElement('div');
+                    sourcesDiv.className = 'ai-sources';
+                    sourcesDiv.innerHTML = 'Sources: ';
+                    sources.forEach(source => {
+                        if (source.uri && source.title) {
+                            sourcesDiv.innerHTML += `<a href="${source.uri}" target="_blank" title="${source.title}">${source.title}</a>`;
+                        }
+                    });
+                    messageDiv.appendChild(sourcesDiv);
+                }
+
+                messagesContainer.appendChild(messageDiv);
+                this.scrollToBottom();
+
+                if (sender === 'user') {
+                    this.chatHistory.push({ role: 'user', parts: [{ text: text }] });
+                } else if (sender === 'ai') {
+                    this.chatHistory.push({ role: 'model', parts: [{ text: text }] });
+                }
+            },
+
+            scrollToBottom: function() {
+                const messagesContainer = document.getElementById('chat-messages');
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            },
+
+            setLoading: function(isLoading) {
+                this.chatIsLoading = isLoading;
+                document.getElementById('loading-dots').style.display = isLoading ? 'block' : 'none';
+                document.getElementById('chat-send-btn').disabled = isLoading;
+                document.getElementById('chat-input').disabled = isLoading;
+            },
+
+            // --- Gemini API Call ---
+
+            callGemini: async function(userQuery) {
+                this.setLoading(true);
+
+                const SYSTEM_INSTRUCTION = `You are Gemini, the context-aware AI Assistant for 'Design Studio Pro - CustomThreads'. You are embedded directly into the design studio environment.
+                The user is working on custom apparel. Your primary role is to act as a collaborative guide, providing real-time, directional assistance based on the app's layout:
+                1.  **Left Sidebar (Tools):** Contains 'Select Product', the **'Sides'** controls (Front, Back, Left, Right, and **'All Sides'**), and 'Add Elements' buttons (Add Text, Add Image, Add Shape).
+                2.  **Center:** The main 'Design Area' (Canvas) where elements are placed.
+                3.  **Right Sidebar (Properties):** Contains 'Element Properties' for the currently selected item.
+                4.  **Navigation Bar:** Contains 'Save Design', 'Export PNG', 'New', and 'Add to Cart' buttons.
+
+                You MUST tell the user which section to look at and what button to click for application-specific questions (e.g., 'To add text, go to the **Left Sidebar**, under 'Add Elements', and click the **Add Text** button.').
+                You must also answer any general question or search request using Google Search (enabled via the 'google_search' tool), including searching for image inspiration or direct image URLs. Keep responses concise and supportive.`;
+
+                const model = 'gemini-2.5-flash-preview-05-20';
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+
+                const chatContents = [...this.chatHistory, { role: 'user', parts: [{ text: userQuery }] }];
+
+                const payload = {
+                    contents: chatContents,
+                    tools: [{ "google_search": {} }],
+                    systemInstruction: {
+                        parts: [{ text: SYSTEM_INSTRUCTION }]
+                    },
+                };
+
+                try {
+                    const result = await fetchWithBackoff(apiUrl, payload);
+
+                    const candidate = result.candidates?.[0];
+                    let aiText = "I encountered an issue processing your request.";
+                    let sources = [];
+
+                    if (candidate && candidate.content?.parts?.[0]?.text) {
+                        aiText = candidate.content.parts[0].text;
+
+                        // Extract grounding sources
+                        const groundingMetadata = candidate.groundingMetadata;
+                        if (groundingMetadata && groundingMetadata.groundingAttributions) {
+                            sources = groundingMetadata.groundingAttributions
+                                .map(attribution => ({
+                                    uri: attribution.web?.uri,
+                                    title: attribution.web?.title,
+                                }))
+                                .filter(source => source.uri && source.title);
+                        }
+                    }
+
+                    this.addMessage(aiText, 'ai', sources);
+                } catch (error) {
+                    console.error("Gemini API call failed:", error);
+                    this.addMessage("I'm sorry, I couldn't connect to the AI service. Please check your network or try again later.", 'ai');
+                } finally {
+                    this.setLoading(false);
+                }
+            },
+
+    loadFromURL() {
+        const params = new URLSearchParams(window.location.search);
+        const productId = params.get('product');
+        if (productId) {
+            console.log('Loading product:', productId);
+        }
+    },
+
+    setupEventListeners() {
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Delete' || e.key === 'Backspace') {
+                if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+                    e.preventDefault();
+                    this.deleteSelected();
+                }
+            }
+            if (e.ctrlKey || e.metaKey) {
+                if (e.key === 'z') {
+                    e.preventDefault();
+                    this.undo();
+                }
+                if (e.key === 'y') {
+                    e.preventDefault();
+                    this.redo();
+                }
+                if (e.key === 'd') {
+                    e.preventDefault();
+                    this.duplicateSelected();
+                }
+            }
+            if (e.key === 't') {
+                if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+                    e.preventDefault();
+                    this.addText();
+                }
+            }
+            if (e.key === 'v') {
+                if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+                    e.preventDefault();
+                    this.setTool('select');
+                }
+            }
+        });
+    },
+
+    generateId() {
+        return 'el_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    },
+
+    toggleAllSides() {
+    // All possible sides
+    const allSides = ['front', 'back', 'left', 'right'];
+
+    // If all sides are already active, revert to default ['front','back']
+    const isAllActive = allSides.every(s => this.activeSides.includes(s));
+
+    if (isAllActive) {
+        this.activeSides = ['front', 'back'];
+    } else {
+        this.activeSides = [...allSides];
+    }
+
+    // Update button visuals (adds/removes .active on each side button)
+    const sideButtons = document.querySelectorAll('.tool-btn[data-side]');
+    sideButtons.forEach(btn => {
+        const side = btn.getAttribute('data-side');
+        if (this.activeSides.includes(side)) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+
+    // Also update the "All Sides" button visual (optional: active when all on)
+    const allBtn = document.getElementById('btn-toggle-all-sides');
+    if (allBtn) {
+        if (this.activeSides.length === 4) {
+            allBtn.classList.add('active');
+        } else {
+            allBtn.classList.remove('active');
+        }
+    }
+
+    // Re-render canvases and save state
+    this.renderCanvases();
+    this.saveState();
+
+    this.showNotification(
+        isAllActive ? 'Reverted to Front + Back' : 'All sides active',
+        'success'
+    );
+},
+
+    addText() {
+        const element = {
+            id: this.generateId(),
+            type: 'text',
+            content: 'Your Text',
+            x: 150,
+            y: 200,
+            width: 200,
+            height: 50,
+            rotation: 0,
+            fontSize: 32,
+            fontFamily: 'Arial',
+            fontWeight: 'normal',
+            fontStyle: 'normal',
+            color: '#000000',
+            textAlign: 'center'
+        };
+        this.elementsBySide[this.currentEditingSide].push(element);
+        this.selectElement(element.id);
+        this.saveState();
+        this.render();
+    },
+
+    uploadImage() {
+        document.getElementById('file-input').click();
+    },
+
+    handleFileUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const element = {
+                id: this.generateId(),
+                type: 'image',
+                src: e.target.result,
+                x: 100,
+                y: 100,
+                width: 200,
+                height: 200,
+                rotation: 0,
+                opacity: 1
+            };
+            this.elementsBySide[this.currentEditingSide].push(element);
+            this.selectElement(element.id);
+            this.saveState();
+            this.render();
+        };
+        reader.readAsDataURL(file);
+        event.target.value = '';
+    },
+
+    addShape(type) {
+        const element = {
+            id: this.generateId(),
+            type: 'shape',
+            shapeType: type,
+            x: 150,
+            y: 150,
+            width: 150,
+            height: type === 'circle' ? 150 : 100,
+            rotation: 0,
+            fillColor: '#3b82f6',
+            strokeColor: '#000000',
+            strokeWidth: 0,
+            opacity: 1,
+            text: '',
+            fontSize: 24,
+            fontFamily: 'Arial',
+            fontWeight: 'normal',
+            textColor: '#ffffff'
+        };
+        this.elementsBySide[this.currentEditingSide].push(element);
+        this.selectElement(element.id);
+        this.saveState();
+        this.render();
+    },
+
+    addEmoji() {
+        const emoji = prompt('Enter an emoji:', '😊');
+        if (!emoji) return;
+        
+        const element = {
+            id: this.generateId(),
+            type: 'text',
+            content: emoji,
+            x: 150,
+            y: 200,
+            width: 100,
+            height: 100,
+            rotation: 0,
+            fontSize: 64,
+            fontFamily: 'Arial',
+            fontWeight: 'normal',
+            fontStyle: 'normal',
+            color: '#000000',
+            textAlign: 'center'
+        };
+        this.elementsBySide[this.currentEditingSide].push(element);
+        this.selectElement(element.id);
+        this.saveState();
+        this.render();
+    },
+
+    selectElement(id) {
+        this.selectedId = id;
+        this.render();
+        this.updatePropertiesPanel();
+    },
+
+    deselectAll() {
+        this.selectedId = null;
+        this.render();
+        this.updatePropertiesPanel();
+    },
+
+    deleteSelected() {
+        if (!this.selectedId) return;
+        this.elementsBySide[this.currentEditingSide] = this.elementsBySide[this.currentEditingSide].filter(el => el.id !== this.selectedId);
+        this.selectedId = null;
+        this.saveState();
+        this.render();
+        this.updatePropertiesPanel();
+    },
+
+    duplicateSelected() {
+        if (!this.selectedId) return;
+        const original = this.elementsBySide[this.currentEditingSide].find(el => el.id === this.selectedId);
+        if (!original) return;
+        
+        const duplicate = JSON.parse(JSON.stringify(original));
+        duplicate.id = this.generateId();
+        duplicate.x += 20;
+        duplicate.y += 20;
+        this.elementsBySide[this.currentEditingSide].push(duplicate);
+        this.selectElement(duplicate.id);
+        this.saveState();
+        this.render();
+    },
+
+    bringForward() {
+        if (!this.selectedId) return;
+        const elements = this.elementsBySide[this.currentEditingSide];
+        const index = elements.findIndex(el => el.id === this.selectedId);
+        if (index < elements.length - 1) {
+            [elements[index], elements[index + 1]] = [elements[index + 1], elements[index]];
+            this.saveState();
+            this.render();
+        }
+    },
+
+    sendBackward() {
+        if (!this.selectedId) return;
+        const elements = this.elementsBySide[this.currentEditingSide];
+        const index = elements.findIndex(el => el.id === this.selectedId);
+        if (index > 0) {
+            [elements[index], elements[index - 1]] = [elements[index - 1], elements[index]];
+            this.saveState();
+            this.render();
+        }
+    },
+
+    alignLeft() {
+        if (!this.selectedId) return;
+        const el = this.elementsBySide[this.currentEditingSide].find(e => e.id === this.selectedId);
+        if (el) {
+            el.x = 0;
+            this.saveState();
+            this.render();
+        }
+    },
+
+    alignCenter() {
+        if (!this.selectedId) return;
+        const el = this.elementsBySide[this.currentEditingSide].find(e => e.id === this.selectedId);
+        if (el) {
+            el.x = (400 - el.width) / 2;
+            this.saveState();
+            this.render();
+        }
+    },
+
+    alignRight() {
+        if (!this.selectedId) return;
+        const el = this.elementsBySide[this.currentEditingSide].find(e => e.id === this.selectedId);
+        if (el) {
+            el.x = 400 - el.width;
+            this.saveState();
+            this.render();
+        }
+    },
+
+  saveState() {
+    this.history = this.history.slice(0, this.historyIndex + 1);
+    this.history.push(JSON.stringify(this.elementsBySide));
+    this.historyIndex++;
+    if (this.history.length > 50) {
+        this.history.shift();
+        this.historyIndex--;
+    }
+    this.autoSave(); // Auto-save on every change
+},
+    
+
+    undo() {
+        if (this.historyIndex > 0) {
+            this.historyIndex--;
+            this.elementsBySide = JSON.parse(this.history[this.historyIndex]);
+            this.renderCanvases();
+            this.updatePropertiesPanel();
+        }
+    },
+
+    redo() {
+        if (this.historyIndex < this.history.length - 1) {
+            this.historyIndex++;
+            this.elementsBySide = JSON.parse(this.history[this.historyIndex]);
+            this.renderCanvases();
+            this.updatePropertiesPanel();
+        }
+    },
+
+    toggleSide(side) {
+        const btn = event.target.closest('.tool-btn');
+        if (this.activeSides.includes(side)) {
+            if (this.activeSides.length === 1) {
+                this.showNotification('At least one side must be active', 'error');
+                return;
+            }
+            this.activeSides = this.activeSides.filter(s => s !== side);
+            btn.classList.remove('active');
+        } else {
+            this.activeSides.push(side);
+            btn.classList.add('active');
+        }
+        this.renderCanvases();
+        this.saveState();
+    },
+
+    renderCanvases() {
+        const wrapper = document.getElementById('canvasWrapper');
+        wrapper.innerHTML = '';
+        
+        this.activeSides.forEach(side => {
+            const canvasContainer = document.createElement('div');
+            canvasContainer.style.position = 'relative';
+            
+            const label = document.createElement('div');
+            label.style.position = 'absolute';
+            label.style.top = '-30px';
+            label.style.left = '0';
+            label.style.fontSize = '0.875rem';
+            label.style.color = '#9ca3af';
+            label.style.fontWeight = '600';
+            label.textContent = side.charAt(0).toUpperCase() + side.slice(1);
+            
+            const canvas = document.createElement('div');
+            canvas.className = 'canvas';
+            canvas.id = `canvas-${side}`;
+            canvas.innerHTML = `
+                <div class="product-mockup">
+                    <div class="design-area" id="designArea-${side}" data-side="${side}"></div>
+                </div>
+            `;
+            
+            canvasContainer.appendChild(label);
+            canvasContainer.appendChild(canvas);
+            wrapper.appendChild(canvasContainer);
+            
+            const designArea = document.getElementById(`designArea-${side}`);
+            designArea.addEventListener('click', (e) => {
+                if (e.target === designArea) {
+                    this.currentEditingSide = side;
+                    this.deselectAll();
+                }
+            });
+        });
+        
+        this.render();
+    },
+
+    render() {
+        this.activeSides.forEach(side => {
+            this.renderSide(side);
+        });
+        this.renderLayers();
+        this.updateSelectionInfo();
+    },
+
+    renderSide(side) {
+        const designArea = document.getElementById(`designArea-${side}`);
+        if (!designArea) return;
+        
+        designArea.innerHTML = '';
+        const elements = this.elementsBySide[side] || [];
+        
+        elements.forEach(element => {
+            const div = this.createElement(element, side);
+            designArea.appendChild(div);
+        });
+    },
+
+    createElement(element, side) {
+        const div = document.createElement('div');
+        div.className = 'design-element';
+        if (element.id === this.selectedId && this.currentEditingSide === side) {
+            div.classList.add('selected');
+        }
+        div.dataset.id = element.id;
+        div.dataset.side = side;
+        div.style.left = element.x + 'px';
+        div.style.top = element.y + 'px';
+        div.style.width = element.width + 'px';
+        div.style.height = element.height + 'px';
+        div.style.transform = `rotate(${element.rotation}deg)`;
+
+        if (element.type === 'text') {
+            const textDiv = document.createElement('div');
+            textDiv.className = 'text-content';
+            textDiv.textContent = element.content;
+            textDiv.style.fontSize = element.fontSize + 'px';
+            textDiv.style.fontFamily = element.fontFamily;
+            textDiv.style.fontWeight = element.fontWeight;
+            textDiv.style.fontStyle = element.fontStyle;
+            textDiv.style.color = element.color;
+            textDiv.style.textAlign = element.textAlign;
+            div.appendChild(textDiv);
+        } else if (element.type === 'image') {
+            const img = document.createElement('img');
+            img.src = element.src;
+            img.style.opacity = element.opacity;
+            div.appendChild(img);
+        } else if (element.type === 'shape') {
+            div.style.opacity = element.opacity;
+            if (element.shapeType === 'rectangle') {
+                div.style.backgroundColor = element.fillColor;
+                div.style.border = element.strokeWidth + 'px solid ' + element.strokeColor;
+            } else if (element.shapeType === 'circle') {
+                div.style.backgroundColor = element.fillColor;
+                div.style.border = element.strokeWidth + 'px solid ' + element.strokeColor;
+                div.style.borderRadius = '50%';
+            }
+            if (element.text) {
+                const textDiv = document.createElement('div');
+                textDiv.className = 'text-content';
+                textDiv.textContent = element.text;
+                textDiv.style.fontSize = element.fontSize + 'px';
+                textDiv.style.fontFamily = element.fontFamily;
+                textDiv.style.fontWeight = element.fontWeight;
+                textDiv.style.color = element.textColor;
+                div.appendChild(textDiv);
+            }
+        }
+
+        div.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.currentEditingSide = side;
+            this.selectElement(element.id);
+        });
+
+        div.addEventListener('mousedown', (e) => {
+            if (e.target.classList.contains('handle')) return;
+            e.preventDefault();
+            this.currentEditingSide = side;
+            this.startDrag(element, e);
+        });
+
+        if (element.id === this.selectedId && this.currentEditingSide === side) {
+            this.addTransformHandles(div, element);
+        }
+
+        return div;
+    },
+
+addTransformHandles(div, element) {
+        const handles = document.createElement('div');
+        handles.className = 'transform-handles';
+
+        const corners = ['tl', 'tr', 'bl', 'br'];
+        corners.forEach(pos => {
+            const handle = document.createElement('div');
+            handle.className = 'handle ' + pos;
+            handle.addEventListener('mousedown', (e) => {
+                e.stopPropagation();
+                this.startResize(element, pos, e);
+            });
+            handles.appendChild(handle);
+        });
+
+        const rotateHandle = document.createElement('div');
+        rotateHandle.className = 'handle rotate';
+        rotateHandle.addEventListener('mousedown', (e) => {
+            e.stopPropagation();
+            this.startRotate(element, e);
+        });
+        handles.appendChild(rotateHandle);
+
+        div.appendChild(handles);
+    },
+
+    startDrag(element, e) {
+        this.dragState = {
+            element,
+            startX: e.clientX,
+            startY: e.clientY,
+            elementStartX: element.x,
+            elementStartY: element.y
+        };
+
+        const onMouseMove = (e) => this.onDragMove(e);
+        const onMouseUp = () => {
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+            if (this.dragState) {
+                this.saveState();
+                this.dragState = null;
+            }
+        };
+
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
+    },
+
+    onDragMove(e) {
+        if (!this.dragState) return;
+        
+        const dx = e.clientX - this.dragState.startX;
+        const dy = e.clientY - this.dragState.startY;
+        
+        this.dragState.element.x = Math.max(0, Math.min(400 - this.dragState.element.width, 
+            this.dragState.elementStartX + dx));
+        this.dragState.element.y = Math.max(0, Math.min(500 - this.dragState.element.height, 
+            this.dragState.elementStartY + dy));
+        
+        this.render();
+    },
+
+    startResize(element, corner, e) {
+        this.resizeState = {
+            element,
+            corner,
+            startX: e.clientX,
+            startY: e.clientY,
+            startWidth: element.width,
+            startHeight: element.height,
+            startElX: element.x,
+            startElY: element.y
+        };
+
+        const onMouseMove = (e) => this.onResizeMove(e);
+        const onMouseUp = () => {
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+            if (this.resizeState) {
+                this.saveState();
+                this.resizeState = null;
+            }
+        };
+
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
+    },
+
+    onResizeMove(e) {
+        if (!this.resizeState) return;
+        
+        const dx = e.clientX - this.resizeState.startX;
+        const dy = e.clientY - this.resizeState.startY;
+        const { element, corner, startWidth, startHeight, startElX, startElY } = this.resizeState;
+
+        if (corner === 'br') {
+            element.width = Math.max(20, startWidth + dx);
+            element.height = Math.max(20, startHeight + dy);
+        } else if (corner === 'bl') {
+            const newWidth = Math.max(20, startWidth - dx);
+            element.width = newWidth;
+            element.x = startElX + (startWidth - newWidth);
+            element.height = Math.max(20, startHeight + dy);
+        } else if (corner === 'tr') {
+            element.width = Math.max(20, startWidth + dx);
+            const newHeight = Math.max(20, startHeight - dy);
+            element.height = newHeight;
+            element.y = startElY + (startHeight - newHeight);
+        } else if (corner === 'tl') {
+            const newWidth = Math.max(20, startWidth - dx);
+            const newHeight = Math.max(20, startHeight - dy);
+            element.width = newWidth;
+            element.height = newHeight;
+            element.x = startElX + (startWidth - newWidth);
+            element.y = startElY + (startHeight - newHeight);
+        }
+
+        this.render();
+    },
+
+    startRotate(element, e) {
+        const rect = e.target.closest('.design-element').getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+
+        this.rotateState = {
+            element,
+            centerX,
+            centerY,
+            startAngle: Math.atan2(e.clientY - centerY, e.clientX - centerX) * 180 / Math.PI,
+            startRotation: element.rotation
+        };
+
+        const onMouseMove = (e) => this.onRotateMove(e);
+        const onMouseUp = () => {
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+            if (this.rotateState) {
+                this.saveState();
+                this.rotateState = null;
+            }
+        };
+
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
+    },
+
+    onRotateMove(e) {
+        if (!this.rotateState) return;
+        
+        const { centerX, centerY, startAngle, startRotation } = this.rotateState;
+        const currentAngle = Math.atan2(e.clientY - centerY, e.clientX - centerX) * 180 / Math.PI;
+        const deltaAngle = currentAngle - startAngle;
+        
+        this.rotateState.element.rotation = (startRotation + deltaAngle) % 360;
+        this.render();
+    },
+
+    renderLayers() {
+        const layersList = document.getElementById('layersList');
+        const elements = this.elementsBySide[this.currentEditingSide] || [];
+        
+        if (elements.length === 0) {
+            layersList.innerHTML = `
+                <div style="text-align: center; padding: 2rem; color: #6b7280; font-size: 0.875rem;">
+                    No layers yet. Add text or images to get started.
+                </div>
+            `;
+            return;
+        }
+
+        layersList.innerHTML = '';
+        
+        [...elements].reverse().forEach((element, index) => {
+            const layer = document.createElement('div');
+            layer.className = 'layer-item';
+            if (element.id === this.selectedId) {
+                layer.classList.add('active');
+            }
+
+            const icon = element.type === 'text' ? 'T' : 
+                        element.type === 'image' ? '🖼' : '▭';
+
+            const name = element.type === 'text' ? 
+                        (element.content.substring(0, 15) + (element.content.length > 15 ? '...' : '')) :
+                        element.type === 'image' ? 'Image' :
+                        element.shapeType.charAt(0).toUpperCase() + element.shapeType.slice(1);
+
+            layer.innerHTML = `
+                <div class="layer-info">
+                    <div class="layer-icon">${icon}</div>
+                    <div class="layer-name">${name}</div>
+                </div>
+                <div class="layer-actions">
+                    <button class="layer-action-btn" onclick="app.duplicateElement('${element.id}')" title="Duplicate">⎘</button>
+                    <button class="layer-action-btn" onclick="app.deleteElement('${element.id}')" title="Delete">×</button>
+                </div>
+            `;
+
+            layer.addEventListener('click', (e) => {
+                if (!e.target.classList.contains('layer-action-btn')) {
+                    this.selectElement(element.id);
+                }
+            });
+
+            layersList.appendChild(layer);
+        });
+    },
+
+    duplicateElement(id) {
+        const original = this.elementsBySide[this.currentEditingSide].find(el => el.id === id);
+        if (!original) return;
+        
+        const duplicate = JSON.parse(JSON.stringify(original));
+        duplicate.id = this.generateId();
+        duplicate.x += 20;
+        duplicate.y += 20;
+        this.elementsBySide[this.currentEditingSide].push(duplicate);
+        this.selectElement(duplicate.id);
+        this.saveState();
+        this.render();
+    },
+
+    deleteElement(id) {
+        this.elementsBySide[this.currentEditingSide] = this.elementsBySide[this.currentEditingSide].filter(el => el.id !== id);
+        if (this.selectedId === id) {
+            this.selectedId = null;
+        }
+        this.saveState();
+        this.render();
+        this.updatePropertiesPanel();
+    },
+
+    updatePropertiesPanel() {
+        const panel = document.getElementById('propertiesPanel');
+        const content = document.getElementById('propertiesContent');
+
+        if (!this.selectedId) {
+            panel.style.display = 'none';
+            return;
+        }
+
+        const element = this.elementsBySide[this.currentEditingSide].find(el => el.id === this.selectedId);
+        if (!element) {
+            panel.style.display = 'none';
+            return;
+        }
+
+        panel.style.display = 'block';
+
+        if (element.type === 'text') {
+            content.innerHTML = `
+                <div class="form-group">
+                    <label>Text Content</label>
+                    <textarea class="form-control" rows="3" onchange="app.updateElement('content', this.value)">${element.content}</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Font Size</label>
+                    <input type="number" class="form-control" value="${element.fontSize}" 
+                           onchange="app.updateElement('fontSize', parseInt(this.value))" min="8" max="200">
+                </div>
+                <div class="form-group">
+                    <label>Font Family</label>
+                    <select class="form-control" onchange="app.updateElement('fontFamily', this.value)">
+                        <option value="Arial" ${element.fontFamily === 'Arial' ? 'selected' : ''}>Arial</option>
+                        <option value="Helvetica" ${element.fontFamily === 'Helvetica' ? 'selected' : ''}>Helvetica</option>
+                        <option value="Times New Roman" ${element.fontFamily === 'Times New Roman' ? 'selected' : ''}>Times New Roman</option>
+                        <option value="Georgia" ${element.fontFamily === 'Georgia' ? 'selected' : ''}>Georgia</option>
+                        <option value="Courier New" ${element.fontFamily === 'Courier New' ? 'selected' : ''}>Courier New</option>
+                        <option value="Verdana" ${element.fontFamily === 'Verdana' ? 'selected' : ''}>Verdana</option>
+                        <option value="Impact" ${element.fontFamily === 'Impact' ? 'selected' : ''}>Impact</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Font Weight</label>
+                    <select class="form-control" onchange="app.updateElement('fontWeight', this.value)">
+                        <option value="normal" ${element.fontWeight === 'normal' ? 'selected' : ''}>Normal</option>
+                        <option value="bold" ${element.fontWeight === 'bold' ? 'selected' : ''}>Bold</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Text Color</label>
+                    <div class="color-picker-wrapper">
+                        <div class="color-preview" style="background: ${element.color};" 
+                             onclick="document.getElementById('textColorPicker').click()"></div>
+                        <input type="color" id="textColorPicker" class="color-input form-control" 
+                               value="${element.color}" onchange="app.updateElement('color', this.value)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Text Align</label>
+                    <select class="form-control" onchange="app.updateElement('textAlign', this.value)">
+                        <option value="left" ${element.textAlign === 'left' ? 'selected' : ''}>Left</option>
+                        <option value="center" ${element.textAlign === 'center' ? 'selected' : ''}>Center</option>
+                        <option value="right" ${element.textAlign === 'right' ? 'selected' : ''}>Right</option>
+                    </select>
+                </div>
+            `;
+        } else if (element.type === 'image') {
+            content.innerHTML = `
+                <div class="form-group">
+                    <label>Opacity</label>
+                    <input type="range" class="form-control" min="0" max="1" step="0.1" 
+                           value="${element.opacity}" onchange="app.updateElement('opacity', parseFloat(this.value))">
+                </div>
+                <div class="form-group">
+                    <label>Width</label>
+                    <input type="number" class="form-control" value="${element.width}" 
+                           onchange="app.updateElement('width', parseInt(this.value))" min="10">
+                </div>
+                <div class="form-group">
+                    <label>Height</label>
+                    <input type="number" class="form-control" value="${element.height}" 
+                           onchange="app.updateElement('height', parseInt(this.value))" min="10">
+                </div>
+            `;
+        } else if (element.type === 'shape') {
+            content.innerHTML = `
+                <div class="form-group">
+                    <label>Text on Shape</label>
+                    <input type="text" class="form-control" value="${element.text || ''}" 
+                           onchange="app.updateElement('text', this.value)" placeholder="Add text...">
+                </div>
+                <div class="form-group">
+                    <label>Text Size</label>
+                    <input type="number" class="form-control" value="${element.fontSize}" 
+                           onchange="app.updateElement('fontSize', parseInt(this.value))" min="8" max="100">
+                </div>
+                <div class="form-group">
+                    <label>Text Color</label>
+                    <div class="color-picker-wrapper">
+                        <div class="color-preview" style="background: ${element.textColor};" 
+                             onclick="document.getElementById('shapeTextColorPicker').click()"></div>
+                        <input type="color" id="shapeTextColorPicker" class="color-input form-control" 
+                               value="${element.textColor}" onchange="app.updateElement('textColor', this.value)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Fill Color</label>
+                    <div class="color-picker-wrapper">
+                        <div class="color-preview" style="background: ${element.fillColor};" 
+                             onclick="document.getElementById('fillColorPicker').click()"></div>
+                        <input type="color" id="fillColorPicker" class="color-input form-control" 
+                               value="${element.fillColor}" onchange="app.updateElement('fillColor', this.value)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Stroke Width</label>
+                    <input type="number" class="form-control" value="${element.strokeWidth}" 
+                           onchange="app.updateElement('strokeWidth', parseInt(this.value))" min="0" max="20">
+                </div>
+                <div class="form-group">
+                    <label>Stroke Color</label>
+                    <div class="color-picker-wrapper">
+                        <div class="color-preview" style="background: ${element.strokeColor};" 
+                             onclick="document.getElementById('strokeColorPicker').click()"></div>
+                        <input type="color" id="strokeColorPicker" class="color-input form-control" 
+                               value="${element.strokeColor}" onchange="app.updateElement('strokeColor', this.value)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Opacity</label>
+                    <input type="range" class="form-control" min="0" max="1" step="0.1" 
+                           value="${element.opacity}" onchange="app.updateElement('opacity', parseFloat(this.value))">
+                </div>
+            `;
+        }
+
+        content.innerHTML += `
+            <div class="form-group">
+                <label>Rotation (degrees)</label>
+                <input type="number" class="form-control" value="${Math.round(element.rotation)}" 
+                       onchange="app.updateElement('rotation', parseInt(this.value))" min="-180" max="180">
+            </div>
+        `;
+    },
+
+    updateElement(property, value) {
+        if (!this.selectedId) return;
+        const element = this.elementsBySide[this.currentEditingSide].find(el => el.id === this.selectedId);
+        if (!element) return;
+        
+        element[property] = value;
+        this.saveState();
+        this.render();
+        this.updatePropertiesPanel();
+    },
+
+    updateSelectionInfo() {
+        const info = document.getElementById('selectionInfo');
+        if (!this.selectedId) {
+            info.textContent = 'No selection';
+        } else {
+            const element = this.elementsBySide[this.currentEditingSide].find(el => el.id === this.selectedId);
+            if (element) {
+                info.textContent = `Selected: ${element.type} | X: ${Math.round(element.x)} Y: ${Math.round(element.y)} | W: ${Math.round(element.width)} H: ${Math.round(element.height)} | Side: ${this.currentEditingSide}`;
+            }
+        }
+    },
+
+    setProduct(type) {
+        this.currentProduct = type;
+        document.querySelectorAll('.product-option').forEach(opt => {
+            opt.classList.remove('active');
+        });
+        event.target.closest('.product-option').classList.add('active');
+        this.showNotification(`Switched to ${type}`, 'success');
+    },
+
+    setTool(tool) {
+        this.showNotification(`Tool: ${tool}`, 'success');
+    },
+
+    zoomIn() {
+        this.zoom = Math.min(2, this.zoom + 0.1);
+        document.getElementById('zoomLevel').textContent = Math.round(this.zoom * 100) + '%';
+        this.activeSides.forEach(side => {
+            const canvas = document.getElementById(`canvas-${side}`);
+            if (canvas) canvas.style.transform = `scale(${this.zoom})`;
+        });
+    },
+
+    zoomOut() {
+        this.zoom = Math.max(0.5, this.zoom - 0.1);
+        document.getElementById('zoomLevel').textContent = Math.round(this.zoom * 100) + '%';
+        this.activeSides.forEach(side => {
+            const canvas = document.getElementById(`canvas-${side}`);
+            if (canvas) canvas.style.transform = `scale(${this.zoom})`;
+        });
+    },
+
+    loadSpecificDesign(designId) {
+    const savedDesigns = JSON.parse(localStorage.getItem('ct_saved_designs') || '[]');
+    const design = savedDesigns.find(d => d.id === designId);
+    
+    if (!design) {
+        this.showNotification('Design not found', 'error');
+        return;
+    }
+
+    this.elementsBySide = design.elementsBySide;
+    this.activeSides = design.activeSides;
+    this.currentProduct = design.product;
+    
+    // Update UI
+    document.querySelectorAll('.product-option').forEach(opt => {
+        opt.classList.remove('active');
+    });
+    document.querySelector(`.product-option[onclick*="${design.product}"]`)?.classList.add('active');
+    
+    document.querySelectorAll('.tool-btn[data-side]').forEach(btn => {
+        const side = btn.getAttribute('data-side');
+        if (this.activeSides.includes(side)) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+    
+    this.history = [JSON.stringify(this.elementsBySide)];
+    this.historyIndex = 0;
+    this.selectedId = null;
+    this.renderCanvases();
+    this.autoSave();
+    this.showNotification('Design loaded: ' + design.name, 'success');
+},
+
+    loadAutoSavedState() {
+    try {
+        const autoSave = localStorage.getItem('ct_design_autosave');
+        if (autoSave) {
+            const data = JSON.parse(autoSave);
+            this.elementsBySide = data.elementsBySide || { front: [], back: [], left: [], right: [] };
+            this.activeSides = data.activeSides || ['front', 'back'];
+            this.currentProduct = data.product || 'tshirt';
+            this.history = [JSON.stringify(this.elementsBySide)];
+            this.historyIndex = 0;
+        }
+    } catch(e) {
+        console.error('Error loading auto-save:', e);
+    }
+},
+   newProject() {
+    if (confirm('Start a new project? Your current work will be cleared.')) {
+        this.elementsBySide = {
+            front: [],
+            back: [],
+            left: [],
+            right: []
+        };
+        this.history = [];
+        this.historyIndex = -1;
+        this.selectedId = null;
+        this.activeSides = ['front', 'back'];
+        this.currentProduct = 'tshirt';
+        
+        // Clear auto-save
+        localStorage.removeItem('ct_design_autosave');
+        
+        this.saveState();
+        this.renderCanvases();
+        this.showNotification('New project created', 'success');
+    }
+},
+
+// Replace saveProject function:
+async saveProject() {
+    const totalElements = Object.values(this.elementsBySide).reduce((sum, els) => sum + els.length, 0);
+    
+    if (totalElements === 0) {
+        this.showNotification('Add some elements before saving', 'error');
+        return;
+    }
+
+    const designName = prompt('Enter a name for this design:', 'My Custom Design');
+    if (!designName) return;
+
+    // Generate thumbnails
+    const thumbnails = {};
+    for (const side of this.activeSides) {
+        if (this.elementsBySide[side].length > 0) {
+            thumbnails[side] = await this.generateThumbnail(side);
+        }
+    }
+
+    const projectData = {
+        id: 'design_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+        name: designName,
+        elementsBySide: this.elementsBySide,
+        activeSides: this.activeSides,
+        product: this.currentProduct,
+        thumbnails: thumbnails,
+        timestamp: Date.now()
+    };
+
+    // Save to saved designs
+    const savedDesigns = JSON.parse(localStorage.getItem('ct_saved_designs') || '[]');
+    savedDesigns.push(projectData);
+    localStorage.setItem('ct_saved_designs', JSON.stringify(savedDesigns));
+
+    this.showNotification('Design saved successfully!', 'success');
+    
+    setTimeout(() => {
+        if (confirm('Design saved! View all saved designs?')) {
+            window.location.href = 'saveddesigns.html';
+        }
+    }, 1000);
+},
+    autoSave() {
+    try {
+        const autoSaveData = {
+            elementsBySide: this.elementsBySide,
+            activeSides: this.activeSides,
+            product: this.currentProduct,
+            timestamp: Date.now()
+        };
+        localStorage.setItem('ct_design_autosave', JSON.stringify(autoSaveData));
+    } catch(e) {
+        console.error('Auto-save failed:', e);
+    }
+},
+
+
+    async exportDesign() {
+        const canvas = document.createElement('canvas');
+        canvas.width = 1200;
+        canvas.height = 1400;
+        const ctx = canvas.getContext('2d');
+
+        ctx.fillStyle = '#f3f4f6';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        const designAreaScale = 3;
+        const designX = (canvas.width - 400 * designAreaScale) / 2;
+        const designY = (canvas.height - 500 * designAreaScale) / 2;
+
+        ctx.fillStyle = 'white';
+        ctx.fillRect(designX, designY, 400 * designAreaScale, 500 * designAreaScale);
+
+        const elements = this.elementsBySide[this.currentEditingSide] || [];
+
+        for (const element of elements) {
+            ctx.save();
+            const centerX = designX + (element.x + element.width / 2) * designAreaScale;
+            const centerY = designY + (element.y + element.height / 2) * designAreaScale;
+            
+            ctx.translate(centerX, centerY);
+            ctx.rotate(element.rotation * Math.PI / 180);
+
+            if (element.type === 'text') {
+                ctx.fillStyle = element.color;
+                ctx.font = `${element.fontWeight} ${element.fontSize * designAreaScale}px ${element.fontFamily}`;
+                ctx.textAlign = element.textAlign;
+                ctx.textBaseline = 'middle';
+                ctx.fillText(element.content, 0, 0);
+            } else if (element.type === 'image') {
+                const img = new Image();
+                img.src = element.src;
+                await new Promise(resolve => {
+                    img.onload = () => {
+                        ctx.globalAlpha = element.opacity;
+                        ctx.drawImage(img, 
+                            -element.width * designAreaScale / 2, 
+                            -element.height * designAreaScale / 2,
+                            element.width * designAreaScale, 
+                            element.height * designAreaScale
+                        );
+                        ctx.globalAlpha = 1;
+                        resolve();
+                    };
+                });
+            } else if (element.type === 'shape') {
+                ctx.globalAlpha = element.opacity;
+                if (element.shapeType === 'rectangle') {
+                    ctx.fillStyle = element.fillColor;
+                    ctx.fillRect(
+                        -element.width * designAreaScale / 2,
+                        -element.height * designAreaScale / 2,
+                        element.width * designAreaScale,
+                        element.height * designAreaScale
+                    );
+                    if (element.strokeWidth > 0) {
+                        ctx.strokeStyle = element.strokeColor;
+                        ctx.lineWidth = element.strokeWidth * designAreaScale;
+                        ctx.strokeRect(
+                            -element.width * designAreaScale / 2,
+                            -element.height * designAreaScale / 2,
+                            element.width * designAreaScale,
+                            element.height * designAreaScale
+                        );
+                    }
+                } else if (element.shapeType === 'circle') {
+                    ctx.fillStyle = element.fillColor;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, element.width * designAreaScale / 2, 0, Math.PI * 2);
+                    ctx.fill();
+                    if (element.strokeWidth > 0) {
+                        ctx.strokeStyle = element.strokeColor;
+                        ctx.lineWidth = element.strokeWidth * designAreaScale;
+                        ctx.stroke();
+                    }
+                }
+                
+                if (element.text) {
+                    ctx.fillStyle = element.textColor;
+                    ctx.font = `${element.fontWeight} ${element.fontSize * designAreaScale}px ${element.fontFamily}`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(element.text, 0, 0);
+                }
+                
+                ctx.globalAlpha = 1;
+            }
+
+            ctx.restore();
+        }
+
+        canvas.toBlob((blob) => {
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `custom_design_${this.currentEditingSide}_${Date.now()}.png`;
+            link.click();
+            this.showNotification(`Design exported as PNG (${this.currentEditingSide} side)`, 'success');
+        });
+    },
+
+
+async addToCart() {
+        const totalElements = Object.values(this.elementsBySide).reduce((sum, els) => sum + els.length, 0);
+        if (totalElements === 0) {
+            this.showNotification('Please add some design elements first', 'error');
+            return;
+        }
+        
+        const thumbnails = {};
+        for (const side of this.activeSides) {
+            if (this.elementsBySide[side].length > 0) {
+                thumbnails[side] = await this.generateThumbnail(side);
+            }
+        }
+        
+        const cartItem = {
+            name: `Custom ${this.currentProduct.charAt(0).toUpperCase() + this.currentProduct.slice(1)}`,
+            price: 29.99,
+            icon: this.getProductIcon(this.currentProduct),
+            quantity: 1,
+            isCustom: true,
+            customDesign: {
+                productType: this.currentProduct,
+                activeSides: this.activeSides,
+                elementsBySide: JSON.parse(JSON.stringify(this.elementsBySide)),
+                thumbnails: thumbnails,
+                timestamp: Date.now()
+            }
+        };
+        
+        CartManager.addItem(cartItem);
+        
+        // AUTOMATICALLY SEND TO ADMIN ORDERS
+        const currentUser = Auth.getCurrentUser();
+        const orderId = 'order_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        
+        const adminOrder = {
+            orderId: orderId,
+            orderDate: Date.now(),
+            status: 'pending',
+            customerName: currentUser ? `${currentUser.firstName} ${currentUser.lastName}` : 'Guest User',
+            customerEmail: currentUser ? currentUser.email : 'guest@example.com',
+            product: cartItem.name,
+            productType: this.currentProduct,
+            price: cartItem.price,
+            quantity: cartItem.quantity,
+            size: 'M',
+            activeSides: this.activeSides,
+            thumbnails: thumbnails,
+            elementsBySide: JSON.parse(JSON.stringify(this.elementsBySide)),
+            designDimensions: { width: 400, height: 500 },
+            totalElements: totalElements
+        };
+        
+        // Save to pending orders for admin
+        const pendingOrders = JSON.parse(localStorage.getItem('ct_pending_orders') || '[]');
+        pendingOrders.push(adminOrder);
+        localStorage.setItem('ct_pending_orders', JSON.stringify(pendingOrders));
+        
+        this.showNotification('Design added to cart and sent to admin!', 'success');
+        
+        setTimeout(() => {
+            if (confirm('Design added to cart and sent to admin! Would you like to view your cart?')) {
+                window.location.href = 'new.html#cart';
+            }
+        }, 1500);
+    },
+      
+     // Utility function for exponential backoff retry logic
+    async generateThumbnail(side) {
+        const canvas = document.createElement('canvas');
+        canvas.width = 400;
+        canvas.height = 500;
+        const ctx = canvas.getContext('2d');
+        
+        ctx.fillStyle = '#f3f4f6';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        const elements = this.elementsBySide[side] || [];
+        
+        for (const element of elements) {
+            ctx.save();
+            const centerX = element.x + element.width / 2;
+            const centerY = element.y + element.height / 2;
+            
+            ctx.translate(centerX, centerY);
+            ctx.rotate(element.rotation * Math.PI / 180);
+            
+            if (element.type === 'text') {
+                ctx.fillStyle = element.color;
+                ctx.font = `${element.fontWeight} ${element.fontSize}px ${element.fontFamily}`;
+                ctx.textAlign = element.textAlign;
+                ctx.textBaseline = 'middle';
+                ctx.fillText(element.content, 0, 0);
+            } else if (element.type === 'image') {
+                const img = new Image();
+                img.src = element.src;
+                await new Promise(resolve => {
+                    img.onload = () => {
+                        ctx.globalAlpha = element.opacity;
+                        ctx.drawImage(img, -element.width / 2, -element.height / 2, element.width, element.height);
+                        ctx.globalAlpha = 1;
+                        resolve();
+                    };
+                    img.onerror = resolve;
+                });
+            } else if (element.type === 'shape') {
+                ctx.globalAlpha = element.opacity;
+                if (element.shapeType === 'rectangle') {
+                    ctx.fillStyle = element.fillColor;
+                    ctx.fillRect(-element.width / 2, -element.height / 2, element.width, element.height);
+                } else if (element.shapeType === 'circle') {
+                    ctx.fillStyle = element.fillColor;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, element.width / 2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.globalAlpha = 1;
+            }
+            
+            ctx.restore();
+        }
+        
+        return canvas.toDataURL('image/png');
+    },
+
+    getProductIcon(productType) {
+        const icons = {
+            'tshirt': '👕',
+            'hoodie': '🧥',
+            'tank': '👚',
+            'cap': '🧢'
+        };
+        return icons[productType] || '👕';
+    },
+
+    showNotification(message, type = 'success') {
+        const notification = document.createElement('div');
+        notification.className = 'notification' + (type === 'error' ? ' error' : '');
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+};
+
+app.init();  </script>
+
+<!-- AI Assistant Chatbox UI -->
+<button class="ai-chat-toggle" id="ai-chat-toggle">+</button>
+
+<div id="ai-chat-box">
+    <div class="chat-header">Gemini AI Assistant</div>
+    <div id="chat-messages">
+        <div class="message ai">
+            Hello! I'm Gemini, your AI Design Assistant. I can help you with design ideas, general knowledge, or even search the web for image inspiration. How can I help you customize your apparel today?
+        </div>
+    </div>
+    <div class="loading-dots" id="loading-dots">...</div>
+    <div class="chat-input-area">
+        <input type="text" id="chat-input" placeholder="Ask me anything..." autocomplete="off">
+        <button id="chat-send-btn">Send</button>
+    </div>
+</div>
+</body>
+</html>
